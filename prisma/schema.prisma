@@ -1,0 +1,599 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  MANAGER
+  TEACHER
+  ACCOUNTANT
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum BranchStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum StudentStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  TRIAL_LESSON
+  CONVERTED
+  LOST
+}
+
+enum LeadSource {
+  TELEGRAM
+  INSTAGRAM
+  REFERRAL
+  CALL
+  WALK_IN
+  OTHER
+}
+
+enum TeacherStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum GroupStatus {
+  FORMING
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  CLICK
+  PAYME
+  OTHER
+}
+
+enum StudentFeeStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum SalaryType {
+  FIXED
+  PER_STUDENT
+  PER_GROUP
+  PERCENTAGE
+}
+
+enum SalaryRecordStatus {
+  PENDING
+  PARTIAL
+  PAID
+}
+
+enum ExpenseCategory {
+  RENT
+  SALARY
+  MARKETING
+  UTILITIES
+  EQUIPMENT
+  OTHER
+}
+
+enum ExpenseStatus {
+  ACTIVE
+  VOID
+}
+
+enum FinancialTransactionType {
+  INCOME
+  EXPENSE
+  SALARY
+}
+
+enum NotificationType {
+  STUDENT_ABSENT
+  PAYMENT_OVERDUE
+  NEW_LEAD
+  GROUP_FULL
+  SYSTEM_ALERT
+  TASK_DUE
+  LEAD_FOLLOW_UP
+  ATTENDANCE_DROP
+}
+
+enum NotificationSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+  CANCELLED
+}
+
+enum TaskEntityType {
+  LEAD
+  STUDENT
+  GROUP
+  PAYMENT
+  ATTENDANCE
+  SYSTEM
+}
+
+enum TelegramRecipient {
+  STUDENT
+  PARENT
+}
+
+enum TelegramMessageType {
+  ATTENDANCE_ABSENT
+  PAYMENT_OVERDUE
+  SYSTEM_ALERT
+}
+
+enum TelegramDeliveryStatus {
+  SENT
+  FAILED
+  SKIPPED
+}
+
+model Branch {
+  id               String            @id @default(cuid())
+  name             String
+  phone            String
+  address          String
+  landmark         String?
+  status           BranchStatus      @default(ACTIVE)
+  users            User[]
+  students         Student[]
+  leads            Lead[]
+  teachers         Teacher[]
+  groups           StudyGroup[]
+  payments         Payment[]
+  studentFees      StudentFee[]
+  paymentReminders PaymentReminder[]
+  expenses         Expense[]
+  salaryRecords    SalaryRecord[]
+  salaryPayments   SalaryPayment[]
+  transactions     FinancialTransaction[]
+  auditLogs        AuditLog[]
+  notifications    Notification[]
+  tasks            Task[]
+  telegramMessages TelegramMessage[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model User {
+  id             String            @id @default(cuid())
+  firstName      String
+  lastName       String
+  phone          String            @unique
+  passwordHash   String
+  role           Role
+  status         UserStatus        @default(ACTIVE)
+  branchId       String?
+  branch         Branch?           @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  assignedLeads  Lead[]            @relation("LeadAssignee")
+  createdPayments Payment[]        @relation("PaymentCreator")
+  sentReminders  PaymentReminder[] @relation("ReminderSender")
+  createdExpenses Expense[]        @relation("ExpenseCreator")
+  createdSalaryPayments SalaryPayment[] @relation("SalaryPaymentCreator")
+  transactions   FinancialTransaction[] @relation("TransactionCreator")
+  auditLogs      AuditLog[]        @relation("AuditLogCreator")
+  notifications  Notification[]
+  assignedTasks  Task[]            @relation("TaskAssignee")
+  createdTasks   Task[]            @relation("TaskCreator")
+  createdTelegramMessages TelegramMessage[] @relation("TelegramMessageCreator")
+  telegramChatId String?
+  telegramOptIn  Boolean           @default(false)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@index([branchId])
+}
+
+model Student {
+  id                String            @id @default(cuid())
+  firstName         String
+  lastName          String
+  phone             String
+  parentPhone       String?
+  gender            Gender?
+  birthDate         DateTime?
+  schoolName        String?
+  gradeLevel        String?
+  targetExamYear    Int?
+  notes             String?
+  status            StudentStatus     @default(ACTIVE)
+  branchId          String
+  branch            Branch            @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  groups            GroupStudent[]
+  convertedFromLead Lead?             @relation("LeadConvertedStudent")
+  attendances       Attendance[]
+  payments          Payment[]
+  fees              StudentFee[]
+  reminders         PaymentReminder[]
+  telegramChatId    String?
+  telegramOptIn     Boolean           @default(false)
+  parentTelegramChatId String?
+  parentTelegramOptIn  Boolean        @default(false)
+  telegramMessages  TelegramMessage[]
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@index([branchId])
+  @@index([status])
+}
+
+model Lead {
+  id                String      @id @default(cuid())
+  firstName         String
+  lastName          String?
+  phone             String
+  source            LeadSource
+  interestedSubject String?
+  status            LeadStatus  @default(NEW)
+  notes             String?
+  branchId          String
+  branch            Branch      @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  assignedToId      String?
+  assignedTo        User?       @relation("LeadAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+  convertedStudentId String?    @unique
+  convertedStudent  Student?    @relation("LeadConvertedStudent", fields: [convertedStudentId], references: [id], onDelete: SetNull)
+  lastContactAt     DateTime?
+  followUpDueAt     DateTime?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  @@index([branchId])
+  @@index([assignedToId])
+  @@index([status])
+}
+
+model Teacher {
+  id                String         @id @default(cuid())
+  firstName         String
+  lastName          String
+  phone             String
+  specialtySubjects String[]
+  branchId          String
+  branch            Branch         @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  status            TeacherStatus  @default(ACTIVE)
+  hiredAt           DateTime?
+  notes             String?
+  groups            StudyGroup[]
+  salaryConfigs     TeacherSalaryConfig[]
+  salaryRecords     SalaryRecord[]
+  salaryPayments    SalaryPayment[]
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@index([branchId])
+  @@index([status])
+}
+
+model StudyGroup {
+  id         String            @id @default(cuid())
+  name       String
+  subject    String
+  teacherId  String?
+  teacher    Teacher?          @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  branchId   String
+  branch     Branch            @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  room       String?
+  startDate  DateTime
+  status     GroupStatus       @default(FORMING)
+  maxStudents Int              @default(20)
+  notes      String?
+  students   GroupStudent[]
+  attendances Attendance[]
+  payments   Payment[]
+  fees       StudentFee[]
+  reminders  PaymentReminder[]
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+
+  @@index([branchId])
+  @@index([teacherId])
+  @@index([status])
+}
+
+model GroupStudent {
+  groupId    String
+  studentId  String
+  group      StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  student    Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  joinedAt   DateTime   @default(now())
+
+  @@id([groupId, studentId])
+  @@index([studentId])
+}
+
+model Attendance {
+  id        String           @id @default(cuid())
+  studentId String
+  groupId   String
+  date      DateTime
+  status    AttendanceStatus
+  note      String?
+  student   Student          @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  group     StudyGroup       @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@unique([studentId, groupId, date])
+  @@index([groupId, date])
+  @@index([studentId, date])
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  studentId     String
+  groupId       String?
+  branchId      String
+  amountCents   Int
+  paymentMethod PaymentMethod
+  paidAt        DateTime
+  createdById   String
+  note          String?
+  student       Student       @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  group         StudyGroup?   @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  branch        Branch        @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  createdBy     User          @relation("PaymentCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  transaction   FinancialTransaction?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([studentId, paidAt])
+  @@index([groupId, paidAt])
+  @@index([branchId, paidAt])
+  @@index([paymentMethod])
+}
+
+model StudentFee {
+  id             String         @id @default(cuid())
+  studentId      String
+  groupId        String
+  branchId       String
+  monthlyFeeCents Int
+  startDate      DateTime
+  endDate        DateTime?
+  status         StudentFeeStatus @default(ACTIVE)
+  student        Student        @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  group          StudyGroup     @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  branch         Branch         @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([studentId, status])
+  @@index([groupId, status])
+  @@index([branchId, status])
+}
+
+model PaymentReminder {
+  id        String      @id @default(cuid())
+  studentId String
+  groupId   String?
+  branchId  String
+  note      String?
+  sentAt    DateTime    @default(now())
+  sentById  String
+  student   Student     @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  group     StudyGroup? @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  branch    Branch      @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  sentBy    User        @relation("ReminderSender", fields: [sentById], references: [id], onDelete: Restrict)
+  createdAt DateTime    @default(now())
+
+  @@index([studentId, sentAt])
+  @@index([branchId, sentAt])
+  @@index([groupId, sentAt])
+}
+
+model TeacherSalaryConfig {
+  id             String     @id @default(cuid())
+  teacherId      String
+  type           SalaryType
+  unitAmountCents Int?
+  percentageBps  Int?
+  isActive       Boolean    @default(true)
+  effectiveFrom  DateTime   @default(now())
+  effectiveTo    DateTime?
+  teacher        Teacher    @relation(fields: [teacherId], references: [id], onDelete: Restrict)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@index([teacherId, isActive])
+}
+
+model SalaryRecord {
+  id                   String            @id @default(cuid())
+  teacherId            String
+  branchId             String
+  periodMonth          Int
+  periodYear           Int
+  calculatedAmountCents Int
+  paidAmountCents      Int               @default(0)
+  status               SalaryRecordStatus @default(PENDING)
+  breakdown            Json?
+  teacher              Teacher           @relation(fields: [teacherId], references: [id], onDelete: Restrict)
+  branch               Branch            @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  payments             SalaryPayment[]
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+
+  @@unique([teacherId, periodMonth, periodYear])
+  @@index([branchId, periodYear, periodMonth])
+  @@index([status])
+}
+
+model SalaryPayment {
+  id             String              @id @default(cuid())
+  salaryRecordId String
+  teacherId      String
+  branchId       String
+  amountCents    Int
+  paidAt         DateTime
+  createdById    String
+  note           String?
+  salaryRecord   SalaryRecord        @relation(fields: [salaryRecordId], references: [id], onDelete: Restrict)
+  teacher        Teacher             @relation(fields: [teacherId], references: [id], onDelete: Restrict)
+  branch         Branch              @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  createdBy      User                @relation("SalaryPaymentCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  transaction    FinancialTransaction?
+  createdAt      DateTime            @default(now())
+
+  @@index([teacherId, paidAt])
+  @@index([branchId, paidAt])
+}
+
+model Expense {
+  id             String          @id @default(cuid())
+  title          String
+  amountCents    Int
+  category       ExpenseCategory
+  status         ExpenseStatus   @default(ACTIVE)
+  branchId       String
+  paidAt         DateTime
+  createdById    String
+  note           String?
+  branch         Branch          @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  createdBy      User            @relation("ExpenseCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  transaction    FinancialTransaction?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([branchId, paidAt])
+  @@index([category])
+  @@index([status])
+}
+
+model FinancialTransaction {
+  id              String                 @id @default(cuid())
+  type            FinancialTransactionType
+  amountCents     Int
+  branchId        String
+  createdById     String
+  occurredAt      DateTime
+  note            String?
+  paymentId       String?                @unique
+  expenseId       String?                @unique
+  salaryPaymentId String?                @unique
+  branch          Branch                 @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  createdBy       User                   @relation("TransactionCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  payment         Payment?               @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+  expense         Expense?               @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+  salaryPayment   SalaryPayment?         @relation(fields: [salaryPaymentId], references: [id], onDelete: SetNull)
+  createdAt       DateTime               @default(now())
+
+  @@index([branchId, occurredAt])
+  @@index([type])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  action      String
+  entityType  String
+  entityId    String
+  branchId    String?
+  createdById String
+  payload     Json?
+  branch      Branch?  @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  createdBy   User     @relation("AuditLogCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  createdAt   DateTime @default(now())
+
+  @@index([branchId, createdAt])
+  @@index([entityType, entityId])
+}
+
+model Notification {
+  id        String               @id @default(cuid())
+  userId    String
+  branchId  String?
+  type      NotificationType
+  severity  NotificationSeverity @default(INFO)
+  title     String
+  message   String
+  link      String?
+  isRead    Boolean              @default(false)
+  readAt    DateTime?
+  user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  branch    Branch?              @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  createdAt DateTime             @default(now())
+
+  @@index([userId, isRead, createdAt])
+  @@index([branchId, createdAt])
+}
+
+model Task {
+  id                String         @id @default(cuid())
+  title             String
+  description       String?
+  assignedToId      String
+  createdById       String?
+  branchId          String
+  relatedEntityType TaskEntityType?
+  relatedEntityId   String?
+  dueDate           DateTime?
+  status            TaskStatus     @default(TODO)
+  completedAt       DateTime?
+  assignedTo        User           @relation("TaskAssignee", fields: [assignedToId], references: [id], onDelete: Restrict)
+  createdBy         User?          @relation("TaskCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  branch            Branch         @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@index([assignedToId, status, dueDate])
+  @@index([branchId, status, dueDate])
+}
+
+model TelegramMessage {
+  id          String               @id @default(cuid())
+  studentId   String
+  branchId    String
+  createdById String?
+  recipient   TelegramRecipient
+  type        TelegramMessageType
+  chatId      String
+  message     String
+  status      TelegramDeliveryStatus
+  error       String?
+  student     Student              @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  branch      Branch               @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  createdBy   User?                @relation("TelegramMessageCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  sentAt      DateTime             @default(now())
+
+  @@index([studentId, sentAt])
+  @@index([branchId, sentAt])
+  @@index([type, status, sentAt])
+}

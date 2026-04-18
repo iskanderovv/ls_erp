@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# O'quv Markaz ERP/CRM (Phase 1-3)
 
-## Getting Started
+Uzbekistondagi imtihonga tayyorlov markazlari uchun ichki ERP/CRM tizimi.  
+Bu platforma faqat xodimlar (owner/admin, manager, receptionist, teacher, accountant) uchun mo'ljallangan.
 
-First, run the development server:
+## Texnologiyalar
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- RHF + Zod
+- Prisma + PostgreSQL
+- TanStack Query
+- Native fetch
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Phase 1-3 modullar
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Auth (login/logout, cookie session, middleware protection)
+- RBAC (`SUPER_ADMIN`, `ADMIN`, `MANAGER`, `TEACHER`, `ACCOUNTANT`)
+- Branch management
+- Student management (CRUD + qidiruv/filtr)
+- Lead management (CRUD + status + lead -> student conversion)
+- Teacher management (CRUD + filtr)
+- Group management (CRUD + teacher assignment + students attach)
+- Dashboard (asosiy statistikalar + recent students/leads)
+- Attendance (kunlik davomat, bulk belgilash, tarix)
+- Payments (to'lov kiritish, usul bo'yicha filtr, tarix)
+- Debt tracking (oylik to'lov sozlamasi, qarzdorlik ro'yxati, reminder log)
+- Financial dashboard (bugungi/oylik tushum, qarzdorlik, usullar kesimi)
+- Cash flow log (xronologik kirimlar)
+- Expense management (kiritish, tahrirlash, bekor qilish, kategoriya filtrlari)
+- Teacher salary (salary model config, davriy hisoblash, partial/full to'lov)
+- Financial ledger (INCOME/EXPENSE/SALARY yagona jurnal)
+- Monthly reports (revenue, expense, salary, net profit, insightlar)
+- Audit log (moliyaviy amallar tarixi)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Boshlash
 
-## Learn More
+1. `cp .env.example .env` (Windowsda qo'lda nusxa oling)
+2. `DATABASE_URL` va `AUTH_SECRET` ni sozlang
+3. Paketlar o'rnating:
+   ```bash
+   npm install
+   ```
+4. Prisma client yaratish va schema qo'llash:
+   ```bash
+   npm run prisma:generate
+   npm run db:push
+   ```
+5. Seed ma'lumotlar:
+   ```bash
+   npm run db:seed
+   ```
+   yoki bir martada:
+   ```bash
+   npm run db:setup
+   ```
+6. Loyihani ishga tushirish:
+   ```bash
+   npm run dev
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+## Test login
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Telefon: `+998900000001`
+- Parol: `Admin12345!`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Skriptlar
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `npm run dev`
+- `npm run lint`
+- `npm run build`
+- `npm run typecheck`
+- `npm run prisma:generate`
+- `npm run db:prepare`
+- `npm run db:push`
+- `npm run db:seed`
+- `npm run db:setup`
