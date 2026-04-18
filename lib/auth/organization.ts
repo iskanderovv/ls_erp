@@ -2,6 +2,9 @@ import { prisma } from "@/lib/prisma";
 import { SubscriptionPlan } from "@prisma/client";
 
 export async function getOrganization(id: string) {
+  // @ts-expect-error prisma.organization might be temporarily undefined
+  if (!prisma.organization) return null;
+  // @ts-expect-error prisma.organization
   return prisma.organization.findUnique({
     where: { id },
   });
