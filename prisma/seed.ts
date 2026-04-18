@@ -18,6 +18,15 @@ const prisma = new PrismaClient();
 
 async function main() {
   await prisma.paymentReminder.deleteMany();
+  await prisma.telegramMessage.deleteMany();
+  await prisma.notification.deleteMany();
+  await prisma.task.deleteMany();
+  await prisma.auditLog.deleteMany();
+  await prisma.financialTransaction.deleteMany();
+  await prisma.salaryPayment.deleteMany();
+  await prisma.salaryRecord.deleteMany();
+  await prisma.teacherSalaryConfig.deleteMany();
+  await prisma.expense.deleteMany();
   await prisma.attendance.deleteMany();
   await prisma.payment.deleteMany();
   await prisma.studentFee.deleteMany();
@@ -145,6 +154,8 @@ async function main() {
       schoolName: "42-maktab",
       gradeLevel: "11-sinf",
       targetExamYear: 2026,
+      telegramChatId: "123456789",
+      telegramOptIn: true,
     },
   });
 
@@ -158,6 +169,8 @@ async function main() {
       schoolName: "81-maktab",
       gradeLevel: "10-sinf",
       targetExamYear: 2027,
+      parentTelegramChatId: "987654321",
+      parentTelegramOptIn: true,
     },
   });
 
@@ -171,6 +184,7 @@ async function main() {
       startDate: new Date("2026-01-15"),
       status: GroupStatus.ACTIVE,
       notes: "Dushanba-Chorshanba-Juma",
+      maxStudents: 20,
     },
   });
 
@@ -183,6 +197,7 @@ async function main() {
       room: "205",
       startDate: new Date("2026-02-01"),
       status: GroupStatus.FORMING,
+      maxStudents: 20,
     },
   });
 
@@ -309,6 +324,7 @@ async function main() {
         status: LeadStatus.NEW,
         branchId: chilonzorBranch.id,
         assignedToId: manager.id,
+        followUpDueAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
       },
       {
         firstName: "Sevara",
@@ -317,6 +333,55 @@ async function main() {
         interestedSubject: "Matematika",
         status: LeadStatus.CONTACTED,
         branchId: yunusobodBranch.id,
+        followUpDueAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      },
+    ],
+  });
+
+  await prisma.task.createMany({
+    data: [
+      {
+        title: "Shohruh lidiga qo'ng'iroq qilish",
+        description: "Follow-up muddatidan o'tib ketgan.",
+        assignedToId: manager.id,
+        createdById: admin.id,
+        branchId: chilonzorBranch.id,
+        relatedEntityType: "LEAD",
+        status: "TODO",
+        dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      },
+      {
+        title: "Jasur bilan davomat bo'yicha bog'lanish",
+        assignedToId: manager.id,
+        createdById: admin.id,
+        branchId: chilonzorBranch.id,
+        relatedEntityType: "ATTENDANCE",
+        relatedEntityId: studentOne.id,
+        status: "IN_PROGRESS",
+        dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      },
+    ],
+  });
+
+  await prisma.notification.createMany({
+    data: [
+      {
+        userId: manager.id,
+        branchId: chilonzorBranch.id,
+        type: "NEW_LEAD",
+        severity: "INFO",
+        title: "Yangi lid biriktirildi",
+        message: "Shohruh Nazarov uchun follow-up qiling.",
+        link: "/dashboard/leads",
+      },
+      {
+        userId: admin.id,
+        branchId: chilonzorBranch.id,
+        type: "PAYMENT_OVERDUE",
+        severity: "WARNING",
+        title: "Qarz eslatmasi",
+        message: "Jasur Olimov to'lovi qisman qolgan.",
+        link: "/dashboard/debts",
       },
     ],
   });

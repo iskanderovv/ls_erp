@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { LeadStatus } from "@prisma/client";
 
 import { authorizeRequest } from "@/lib/auth/api";
 import { canAccessBranch } from "@/lib/auth/branch-scope";
@@ -44,13 +45,13 @@ export async function PATCH(request: NextRequest, { params }: Params) {
       notes: emptyToNull(parsed.data.notes),
       branchId: parsed.data.branchId,
       assignedToId: emptyToNull(parsed.data.assignedToId),
-      ...(parsed.data.status === "CONTACTED" || parsed.data.status === "TRIAL_LESSON"
+      ...(parsed.data.status === LeadStatus.CONTACTED || parsed.data.status === LeadStatus.TRIAL_LESSON
         ? {
             lastContactAt: new Date(),
             followUpDueAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
           }
         : {}),
-      ...(parsed.data.status === "CONVERTED" || parsed.data.status === "LOST"
+      ...(parsed.data.status === LeadStatus.CONVERTED || parsed.data.status === LeadStatus.LOST
         ? {
             followUpDueAt: null,
           }

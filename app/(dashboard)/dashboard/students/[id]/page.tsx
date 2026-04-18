@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { StudentFeeForm } from "@/components/forms/student-fee-form";
 import { SendReminderButton } from "@/components/finance/send-reminder-button";
+import { TelegramConfigForm } from "@/components/students/telegram-config-form";
 import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { attendanceStatusLabels, genderLabels, studentStatusLabels } from "@/lib/constants";
@@ -22,6 +23,7 @@ export default async function StudentDetailsPage({ params }: Params) {
   const canViewFinance = hasPermission(session.role, "payments.view");
   const canManageFinance = hasPermission(session.role, "payments.manage");
   const canManageReminders = hasPermission(session.role, "reminders.manage");
+  const canManageStudents = hasPermission(session.role, "students.manage");
 
   const student = await prisma.student.findUnique({
     where: { id },
@@ -174,6 +176,25 @@ export default async function StudentDetailsPage({ params }: Params) {
           </p>
         </CardContent>
       </Card>
+
+      {canManageStudents ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Telegram sozlamalari</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <TelegramConfigForm
+              studentId={student.id}
+              initial={{
+                telegramChatId: student.telegramChatId,
+                telegramOptIn: student.telegramOptIn,
+                parentTelegramChatId: student.parentTelegramChatId,
+                parentTelegramOptIn: student.parentTelegramOptIn,
+              }}
+            />
+          </CardContent>
+        </Card>
+      ) : null}
 
       <Card>
         <CardHeader>

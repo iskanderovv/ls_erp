@@ -1,4 +1,4 @@
-# O'quv Markaz ERP/CRM (Phase 1-3)
+# O'quv Markaz ERP/CRM (Phase 1-4)
 
 Uzbekistondagi imtihonga tayyorlov markazlari uchun ichki ERP/CRM tizimi.  
 Bu platforma faqat xodimlar (owner/admin, manager, receptionist, teacher, accountant) uchun mo'ljallangan.
@@ -13,7 +13,7 @@ Bu platforma faqat xodimlar (owner/admin, manager, receptionist, teacher, accoun
 - TanStack Query
 - Native fetch
 
-## Phase 1-3 modullar
+## Phase 1-4 modullar
 
 - Auth (login/logout, cookie session, middleware protection)
 - RBAC (`SUPER_ADMIN`, `ADMIN`, `MANAGER`, `TEACHER`, `ACCOUNTANT`)
@@ -33,21 +33,31 @@ Bu platforma faqat xodimlar (owner/admin, manager, receptionist, teacher, accoun
 - Financial ledger (INCOME/EXPENSE/SALARY yagona jurnal)
 - Monthly reports (revenue, expense, salary, net profit, insightlar)
 - Audit log (moliyaviy amallar tarixi)
+- Internal notification system (bell, unread count, read actions)
+- Task / follow-up system (assign, track, complete)
+- Automation engine (absence/debt/lead/group-full rules)
+- Smart dashboard widgets (alerts, likely-drop, overdue preview)
+- Telegram integration (opt-in + student/parent message sending)
+- Daily automation job endpoint and script (`npm run jobs:daily`)
 
 ## Boshlash
 
 1. `cp .env.example .env` (Windowsda qo'lda nusxa oling)
 2. `DATABASE_URL` va `AUTH_SECRET` ni sozlang
-3. Paketlar o'rnating:
+3. Phase 4 uchun qo'shimcha env:
+   - `TELEGRAM_BOT_TOKEN` (Telegram bot API token)
+   - `AUTOMATION_JOB_SECRET` (daily job endpoint maxfiy kaliti)
+   - `APP_URL` (ixtiyoriy, default: `http://localhost:3000`)
+4. Paketlar o'rnating:
    ```bash
    npm install
    ```
-4. Prisma client yaratish va schema qo'llash:
+5. Prisma client yaratish va schema qo'llash:
    ```bash
    npm run prisma:generate
    npm run db:push
    ```
-5. Seed ma'lumotlar:
+6. Seed ma'lumotlar:
    ```bash
    npm run db:seed
    ```
@@ -55,7 +65,7 @@ Bu platforma faqat xodimlar (owner/admin, manager, receptionist, teacher, accoun
    ```bash
    npm run db:setup
    ```
-6. Loyihani ishga tushirish:
+7. Loyihani ishga tushirish:
    ```bash
    npm run dev
    ```
@@ -76,3 +86,4 @@ Bu platforma faqat xodimlar (owner/admin, manager, receptionist, teacher, accoun
 - `npm run db:push`
 - `npm run db:seed`
 - `npm run db:setup`
+- `npm run jobs:daily`

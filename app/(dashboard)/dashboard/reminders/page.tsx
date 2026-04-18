@@ -1,4 +1,5 @@
-import { StudentFeeStatus } from "@prisma/client";
+import { AttendanceStatus, LeadStatus, StudentFeeStatus } from "@prisma/client";
+import Link from "next/link";
 
 import { RunAutomationButton } from "@/components/automation/run-automation-button";
 import { SendTelegramButton } from "@/components/telegram/send-telegram-button";
@@ -21,7 +22,7 @@ export default async function RemindersPage() {
       ? null
       : (session.branchId ?? "__none__");
 
-  const [reminderLogs, activeFees, absentToday] = await Promise.all([
+  const [reminderLogs, activeFees, absentToday, followUpLeads] = await Promise.all([
     prisma.paymentReminder.findMany({
       where: branchId ? { branchId } : undefined,
       include: {
@@ -44,7 +45,7 @@ export default async function RemindersPage() {
     }),
     prisma.attendance.findMany({
       where: {
-        status: "ABSENT",
+        status: AttendanceStatus.ABSENT,
         group: branchId ? { branchId } : undefined,
         date: {
           gte: new Date(new Date().setHours(0, 0, 0, 0)),
@@ -56,6 +57,26 @@ export default async function RemindersPage() {
         group: { select: { name: true } },
       },
       orderBy: { createdAt: "desc" },
+      take: 20,
+    }),
+    prisma.lead.findMany({
+      where: {
+        ...(branchId ? { branchId } : {}),
+        status: {
+          in: [LeadStatus.NEW, LeadStatus.CONTACTED, LeadStatus.TRIAL_LESSON],
+        },
+        followUpDueAt: {
+          lte: new Date(),
+        },
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        followUpDueAt: true,
+      },
+      orderBy: { followUpDueAt: "asc" },
       take: 20,
     }),
   ]);
@@ -171,6 +192,34 @@ export default async function RemindersPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Follow-up lidlar</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {followUpLeads.length === 0 ? (
+            <p className="text-sm text-slate-500">Follow-up muddatidan o'tgan lid yo'q.</p>
+          ) : (
+            followUpLeads.map((lead) => (
+              <div
+                key={lead.id}
+                className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-slate-100 p-2"
+              >
+                <div>
+                  <p className="text-sm font-medium">
+                    {lead.firstName} {lead.lastName ?? ""}
+                  </p>
+                  <p className="text-xs text-slate-500">{lead.phone} • muddat: {formatDate(lead.followUpDueAt)}</p>
+                </div>
+                <Link href={`/dashboard/leads/${lead.id}/edit`} className="text-sm text-blue-700 hover:underline">
+                  Ochish
+                </Link>
+              </div>
+            ))
+          )}
+        </CardContent>
+      </Card>
 
       {reminderLogs.length === 0 ? (
         <EmptyState message="Eslatma loglari topilmadi." />

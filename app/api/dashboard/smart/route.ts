@@ -1,4 +1,4 @@
-import { LeadStatus } from "@prisma/client";
+import { AttendanceStatus, LeadStatus, StudentFeeStatus, StudentStatus, TaskStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 import { authorizeRequest } from "@/lib/auth/api";
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
         where: {
           ...branchFilter,
           status: {
-            in: ["INACTIVE", "ARCHIVED"],
+            in: [StudentStatus.INACTIVE, StudentStatus.ARCHIVED],
           },
         },
       }),
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
         where: {
           assignedToId: auth.session.userId,
           status: {
-            in: ["TODO", "IN_PROGRESS"],
+            in: [TaskStatus.TODO, TaskStatus.IN_PROGRESS],
           },
         },
         orderBy: [{ dueDate: "asc" }, { createdAt: "desc" }],
@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
   const absentToday = await prisma.attendance.count({
     where: {
       group: branchFilter,
-      status: "ABSENT",
+      status: AttendanceStatus.ABSENT,
       date: {
         gte: todayStart,
         lte: now,
@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
 
   const activeFees = await prisma.studentFee.findMany({
     where: {
-      status: "ACTIVE",
+      status: StudentFeeStatus.ACTIVE,
       ...branchFilter,
     },
     include: {
@@ -142,7 +142,7 @@ export async function GET(request: NextRequest) {
     where: {
       group: branchFilter,
       date: { gte: monthAgo },
-      status: "ABSENT",
+      status: AttendanceStatus.ABSENT,
     },
     _count: { _all: true },
   });
@@ -151,7 +151,7 @@ export async function GET(request: NextRequest) {
     where: {
       group: branchFilter,
       date: { gte: monthAgo },
-      status: "LATE",
+      status: AttendanceStatus.LATE,
     },
     _count: { _all: true },
   });

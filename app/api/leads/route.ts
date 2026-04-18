@@ -35,7 +35,13 @@ export async function POST(request: NextRequest) {
     },
   });
 
-  await handleLeadCreated(lead.id);
+  let automationWarning: string | null = null;
+  try {
+    await handleLeadCreated(lead.id);
+  } catch (error) {
+    automationWarning =
+      error instanceof Error ? error.message : "Lead avtomatik ishlovida xatolik yuz berdi.";
+  }
 
-  return NextResponse.json({ lead });
+  return NextResponse.json({ lead, automationWarning });
 }

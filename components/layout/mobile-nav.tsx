@@ -22,7 +22,9 @@ export function MobileNav({ role }: { role: AppRole }) {
               href={item.href}
               className={cn(
                 "whitespace-nowrap rounded-md px-3 py-1.5 text-sm",
-                active ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-700",
+                active
+                  ? "bg-slate-900 !text-white hover:bg-slate-800 hover:!text-white"
+                  : "bg-slate-100 text-slate-700",
               )}
             >
               {item.label}

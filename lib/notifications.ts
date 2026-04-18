@@ -33,7 +33,7 @@ export async function createNotification(payload: NotificationPayload) {
       userId: payload.userId,
       branchId: payload.branchId ?? null,
       type: payload.type,
-      severity: payload.severity ?? "INFO",
+      severity: payload.severity ?? NotificationSeverity.INFO,
       title: payload.title,
       message: payload.message,
       link: payload.link ?? null,

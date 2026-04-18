@@ -118,6 +118,9 @@ export default async function GroupDetailsPage({ params }: Params) {
           <p>
             <span className="text-slate-500">Xona:</span> {group.room ?? "-"}
           </p>
+          <p>
+            <span className="text-slate-500">Sig'im:</span> {group.students.length}/{group.maxStudents}
+          </p>
           <p className="md:col-span-2">
             <span className="text-slate-500">Izoh:</span> {group.notes ?? "-"}
           </p>

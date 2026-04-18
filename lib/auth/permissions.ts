@@ -80,6 +80,7 @@ const API_PERMISSIONS: Array<{ prefix: string; permission: Permission }> = [
   { prefix: "/api/debts", permission: "debts.view" },
   { prefix: "/api/payment-reminders", permission: "reminders.view" },
   { prefix: "/api/dashboard/finance-summary", permission: "finance.view" },
+  { prefix: "/api/dashboard/smart", permission: "dashboard.view" },
   { prefix: "/api/expenses", permission: "expenses.view" },
   { prefix: "/api/salary", permission: "salary.view" },
   { prefix: "/api/ledger", permission: "ledger.view" },

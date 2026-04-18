@@ -6,6 +6,7 @@ import {
   Role,
   TaskEntityType,
   TaskStatus,
+  StudentFeeStatus,
   UserStatus,
 } from "@prisma/client";
 
@@ -177,7 +178,7 @@ export async function runDailyAutomationJobs(options?: {
   if (runDebts) {
     const now = new Date();
     const fees = await prisma.studentFee.findMany({
-      where: { status: "ACTIVE" },
+      where: { status: StudentFeeStatus.ACTIVE },
       include: {
         student: { select: { id: true, firstName: true, lastName: true } },
         group: { select: { id: true, name: true } },
@@ -366,6 +367,36 @@ export async function runDailyAutomationJobs(options?: {
         link: "/dashboard/leads",
       });
       summary.systemAlerts += 1;
+    }
+
+    const dueTasks = await prisma.task.findMany({
+      where: {
+        status: {
+          in: [TaskStatus.TODO, TaskStatus.IN_PROGRESS],
+        },
+        dueDate: {
+          lte: new Date(),
+        },
+      },
+      select: {
+        id: true,
+        title: true,
+        assignedToId: true,
+        branchId: true,
+      },
+      take: 300,
+    });
+
+    for (const task of dueTasks) {
+      await createNotification({
+        userId: task.assignedToId,
+        branchId: task.branchId,
+        type: NotificationType.TASK_DUE,
+        severity: NotificationSeverity.WARNING,
+        title: "Vazifa muddati o'tmoqda",
+        message: task.title,
+        link: "/dashboard/tasks",
+      });
     }
   }
 

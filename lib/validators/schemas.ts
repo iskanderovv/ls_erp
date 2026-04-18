@@ -96,6 +96,7 @@ export const groupSchema = z.object({
   room: optionalShortText,
   startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Boshlanish sanasini kiriting."),
   status: z.enum(["FORMING", "ACTIVE", "COMPLETED", "ARCHIVED"]),
+  maxStudents: z.coerce.number().int().min(1).max(200),
   notes: optionalText,
 });
 

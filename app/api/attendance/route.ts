@@ -115,13 +115,19 @@ export async function POST(request: NextRequest) {
     ),
   );
 
-  await handleAttendanceAutomation(
-    parsed.data.groupId,
-    parsed.data.entries.map((entry) => ({
-      studentId: entry.studentId,
-      status: entry.status,
-    })),
-  );
+  let automationWarning: string | null = null;
+  try {
+    await handleAttendanceAutomation(
+      parsed.data.groupId,
+      parsed.data.entries.map((entry) => ({
+        studentId: entry.studentId,
+        status: entry.status,
+      })),
+    );
+  } catch (error) {
+    automationWarning =
+      error instanceof Error ? error.message : "Davomat avtomatik qoidalarida xatolik yuz berdi.";
+  }
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ success: true, automationWarning });
 }

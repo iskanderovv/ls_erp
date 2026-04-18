@@ -1,4 +1,4 @@
-import { TaskStatus } from "@prisma/client";
+import { TaskStatus, UserStatus } from "@prisma/client";
 
 import { TaskForm } from "@/components/forms/task-form";
 import { PageHeader } from "@/components/shared/page-header";
@@ -45,7 +45,7 @@ export default async function TasksPage({ searchParams }: { searchParams: Search
     prisma.user.findMany({
       where: {
         ...(branchId ? { branchId } : {}),
-        status: "ACTIVE",
+        status: UserStatus.ACTIVE,
       },
       select: { id: true, firstName: true, lastName: true, branchId: true },
       orderBy: [{ firstName: "asc" }, { lastName: "asc" }],

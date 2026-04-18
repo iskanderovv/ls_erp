@@ -48,6 +48,7 @@ export default async function EditGroupPage({ params }: Params) {
               room: group.room,
               startDate: group.startDate.toISOString().slice(0, 10),
               status: group.status,
+              maxStudents: group.maxStudents,
               notes: group.notes,
             }}
           />

@@ -106,6 +106,7 @@ export default async function GroupsPage({ searchParams }: { searchParams: Searc
                 <TableHead>Status</TableHead>
                 <TableHead>Boshlanish</TableHead>
                 <TableHead>Talabalar</TableHead>
+                <TableHead>Sig'im</TableHead>
                 <TableHead className="w-[180px]">Amallar</TableHead>
               </tr>
             </thead>
@@ -123,6 +124,7 @@ export default async function GroupsPage({ searchParams }: { searchParams: Searc
                   <TableCell>{groupStatusLabels[group.status]}</TableCell>
                   <TableCell>{formatDate(group.startDate)}</TableCell>
                   <TableCell>{group._count.students}</TableCell>
+                  <TableCell>{group.maxStudents}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
                       <Link href={`/dashboard/groups/${group.id}`} className="text-sm text-blue-700 hover:underline">

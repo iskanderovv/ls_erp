@@ -29,12 +29,18 @@ export async function POST(request: NextRequest) {
       room: emptyToNull(parsed.data.room),
       startDate: new Date(parsed.data.startDate),
       status: parsed.data.status,
-      maxStudents: 20,
+      maxStudents: parsed.data.maxStudents,
       notes: emptyToNull(parsed.data.notes),
     },
   });
 
-  await handleGroupCapacityAutomation(group.id);
+  let automationWarning: string | null = null;
+  try {
+    await handleGroupCapacityAutomation(group.id);
+  } catch (error) {
+    automationWarning =
+      error instanceof Error ? error.message : "Group capacity avtomatik tekshiruvda xatolik.";
+  }
 
-  return NextResponse.json({ group });
+  return NextResponse.json({ group, automationWarning });
 }

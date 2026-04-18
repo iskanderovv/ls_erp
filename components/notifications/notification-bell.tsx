@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Bell } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { apiClient } from "@/lib/api-client";
@@ -65,7 +66,8 @@ export function NotificationBell() {
   return (
     <div className="relative">
       <Button variant="outline" size="sm" className="relative" onClick={() => setOpen((prev) => !prev)}>
-        🔔
+        <Bell className="h-4 w-4" aria-hidden="true" />
+        <span className="sr-only">Bildirishnomalar</span>
         {unreadCount > 0 ? (
           <span className="absolute -right-1 -top-1 rounded-full bg-red-600 px-1.5 text-[10px] text-white">
             {unreadCount > 99 ? "99+" : unreadCount}

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { TaskStatus, UserStatus } from "@prisma/client";
 
 import { authorizeRequest } from "@/lib/auth/api";
 import { canAccessBranch } from "@/lib/auth/branch-scope";
@@ -50,6 +51,22 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     }
   }
 
+  if (parsed.data.assignedToId) {
+    const assignee = await prisma.user.findUnique({
+      where: { id: parsed.data.assignedToId },
+      select: { id: true, branchId: true, status: true },
+    });
+    if (!assignee) {
+      return NextResponse.json({ error: "Mas'ul xodim topilmadi." }, { status: 404 });
+    }
+    if (assignee.status !== UserStatus.ACTIVE) {
+      return NextResponse.json({ error: "Mas'ul xodim faol emas." }, { status: 400 });
+    }
+    if (assignee.branchId !== task.branchId) {
+      return NextResponse.json({ error: "Mas'ul xodim filialga mos emas." }, { status: 400 });
+    }
+  }
+
   const updated = await prisma.task.update({
     where: { id },
     data: {
@@ -60,7 +77,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
       ...(parsed.data.assignedToId !== undefined ? { assignedToId: parsed.data.assignedToId } : {}),
       ...(parsed.data.status !== undefined ? { status: parsed.data.status } : {}),
       ...(parsed.data.status !== undefined
-        ? { completedAt: parsed.data.status === "DONE" ? new Date() : null }
+        ? { completedAt: parsed.data.status === TaskStatus.DONE ? new Date() : null }
         : {}),
       ...(parsed.data.dueDate !== undefined
         ? { dueDate: parsed.data.dueDate ? parseDateOnly(parsed.data.dueDate) : null }

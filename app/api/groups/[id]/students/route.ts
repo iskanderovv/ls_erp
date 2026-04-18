@@ -58,7 +58,13 @@ export async function POST(request: NextRequest, { params }: Params) {
     },
   });
 
-  await handleGroupCapacityAutomation(groupId);
+  let automationWarning: string | null = null;
+  try {
+    await handleGroupCapacityAutomation(groupId);
+  } catch (error) {
+    automationWarning =
+      error instanceof Error ? error.message : "Group capacity avtomatik tekshiruvda xatolik.";
+  }
 
-  return NextResponse.json({ relation });
+  return NextResponse.json({ relation, automationWarning });
 }

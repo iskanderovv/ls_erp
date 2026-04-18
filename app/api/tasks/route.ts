@@ -35,7 +35,9 @@ export async function GET(request: NextRequest) {
       ...(canManage
         ? assignedTo === "me"
           ? { assignedToId: auth.session.userId }
-          : {}
+          : assignedTo
+            ? { assignedToId: assignedTo }
+            : {}
         : { assignedToId: auth.session.userId }),
     },
     include: {

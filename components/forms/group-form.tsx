@@ -25,6 +25,7 @@ type GroupFormProps = {
     room: string | null;
     startDate: string;
     status: "FORMING" | "ACTIVE" | "COMPLETED" | "ARCHIVED";
+    maxStudents: number;
     notes: string | null;
   };
 };
@@ -43,6 +44,7 @@ export function GroupForm({ branches, teachers, initialData }: GroupFormProps) {
       room: initialData?.room ?? "",
       startDate: initialData?.startDate ?? "",
       status: initialData?.status ?? "FORMING",
+      maxStudents: initialData?.maxStudents ?? 20,
       notes: initialData?.notes ?? "",
     },
   });
@@ -109,7 +111,7 @@ export function GroupForm({ branches, teachers, initialData }: GroupFormProps) {
         </FormField>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-3">
         <FormField label="Boshlanish sanasi" error={form.formState.errors.startDate?.message}>
           <Input type="date" {...form.register("startDate")} />
         </FormField>
@@ -120,6 +122,12 @@ export function GroupForm({ branches, teachers, initialData }: GroupFormProps) {
             <option value="COMPLETED">Yakunlangan</option>
             <option value="ARCHIVED">Arxiv</option>
           </Select>
+        </FormField>
+        <FormField
+          label="Maksimal talaba soni"
+          error={form.formState.errors.maxStudents?.message as string | undefined}
+        >
+          <Input type="number" min={1} max={200} {...form.register("maxStudents")} />
         </FormField>
       </div>
 

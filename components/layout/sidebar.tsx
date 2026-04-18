@@ -27,7 +27,9 @@ export function Sidebar({ role }: { role: AppRole }) {
               href={item.href}
               className={cn(
                 "block rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                active ? "bg-slate-900 text-white" : "text-slate-700 hover:bg-slate-100",
+                active
+                  ? "bg-slate-900 !text-white hover:bg-slate-800 hover:!text-white"
+                  : "text-slate-700 hover:bg-slate-100",
               )}
             >
               {item.label}
