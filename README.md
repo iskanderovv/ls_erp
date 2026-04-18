@@ -1,4 +1,4 @@
-# O'quv Markaz ERP/CRM (Phase 1-4)
+# EduMarkaz (Phase 1-4)
 
 Uzbekistondagi imtihonga tayyorlov markazlari uchun ichki ERP/CRM tizimi.  
 Bu platforma faqat xodimlar (owner/admin, manager, receptionist, teacher, accountant) uchun mo'ljallangan.

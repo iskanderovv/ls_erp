@@ -76,72 +76,78 @@ export function NotificationBell() {
       </Button>
 
       {open ? (
-        <div className="absolute right-0 z-20 mt-2 w-96 max-w-[90vw] rounded-lg border border-slate-200 bg-white p-3 shadow-lg">
-          <div className="mb-2 flex items-center justify-between">
-            <p className="text-sm font-semibold">Bildirishnomalar</p>
-            <button
-              type="button"
-              onClick={markAllRead}
-              className="text-xs text-slate-600 hover:underline"
-            >
-              Barchasini o'qildi
-            </button>
-          </div>
-
-          <div className="max-h-80 space-y-2 overflow-y-auto">
-            {query.isLoading ? <p className="text-xs text-slate-500">Yuklanmoqda...</p> : null}
-            {!query.isLoading && query.data?.rows.length === 0 ? (
-              <p className="text-xs text-slate-500">Yangi bildirishnoma yo'q.</p>
-            ) : null}
-            {query.data?.rows.map((item) => (
-              <div
-                key={item.id}
-                className={`rounded-md border p-2 text-xs ${
-                  item.isRead ? "border-slate-100 bg-slate-50" : "border-slate-200 bg-white"
-                }`}
+        <>
+          <div className="fixed inset-0 z-10 cursor-default" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 z-20 mt-2 w-96 max-w-[90vw] rounded-lg border border-slate-200 bg-white p-3 shadow-lg">
+            <div className="mb-2 flex items-center justify-between">
+              <p className="text-sm font-semibold">Bildirishnomalar</p>
+              <button
+                type="button"
+                onClick={markAllRead}
+                className="text-xs text-slate-600 hover:underline cursor-pointer"
               >
-                <div className="mb-1 flex items-center justify-between gap-2">
-                  <p className="font-medium">{item.title}</p>
-                  <span
-                    className={`rounded px-1.5 py-0.5 ${
-                      item.severity === "CRITICAL"
-                        ? "bg-red-100 text-red-700"
-                        : item.severity === "WARNING"
-                          ? "bg-amber-100 text-amber-700"
-                          : "bg-slate-100 text-slate-700"
-                    }`}
-                  >
-                    {notificationSeverityLabels[item.severity]}
-                  </span>
-                </div>
-                <p className="mb-1 text-slate-600">{item.message}</p>
-                <p className="mb-2 text-[11px] text-slate-400">
-                  {notificationTypeLabels[item.type]} • {formatDate(item.createdAt)}
-                </p>
-                <div className="flex items-center gap-3">
-                  {item.link ? (
-                    <Link
-                      href={item.link}
-                      className="text-[11px] text-blue-700 hover:underline"
-                      onClick={() => markRead(item.id)}
+                Barchasini o'qildi
+              </button>
+            </div>
+
+            <div className="max-h-80 space-y-2 overflow-y-auto">
+              {query.isLoading ? <p className="text-xs text-slate-500">Yuklanmoqda...</p> : null}
+              {!query.isLoading && query.data?.rows.length === 0 ? (
+                <p className="text-xs text-slate-500">Yangi bildirishnoma yo'q.</p>
+              ) : null}
+              {query.data?.rows.map((item) => (
+                <div
+                  key={item.id}
+                  className={`rounded-md border p-2 text-xs ${
+                    item.isRead ? "border-slate-100 bg-slate-50" : "border-slate-200 bg-white"
+                  }`}
+                >
+                  <div className="mb-1 flex items-center justify-between gap-2">
+                    <p className="font-medium">{item.title}</p>
+                    <span
+                      className={`rounded px-1.5 py-0.5 ${
+                        item.severity === "CRITICAL"
+                          ? "bg-red-100 text-red-700"
+                          : item.severity === "WARNING"
+                            ? "bg-amber-100 text-amber-700"
+                            : "bg-slate-100 text-slate-700"
+                      }`}
                     >
-                      Ochish
-                    </Link>
-                  ) : null}
-                  {!item.isRead ? (
-                    <button
-                      type="button"
-                      className="text-[11px] text-slate-600 hover:underline"
-                      onClick={() => markRead(item.id)}
-                    >
-                      O'qildi
-                    </button>
-                  ) : null}
+                      {notificationSeverityLabels[item.severity]}
+                    </span>
+                  </div>
+                  <p className="mb-1 text-slate-600">{item.message}</p>
+                  <p className="mb-2 text-[11px] text-slate-400">
+                    {notificationTypeLabels[item.type]} • {formatDate(item.createdAt)}
+                  </p>
+                  <div className="flex items-center gap-3">
+                    {item.link ? (
+                      <Link
+                        href={item.link}
+                        className="text-[11px] text-blue-700 hover:underline cursor-pointer"
+                        onClick={() => {
+                          markRead(item.id);
+                          setOpen(false);
+                        }}
+                      >
+                        Ochish
+                      </Link>
+                    ) : null}
+                    {!item.isRead ? (
+                      <button
+                        type="button"
+                        className="text-[11px] text-slate-600 hover:underline cursor-pointer"
+                        onClick={() => markRead(item.id)}
+                      >
+                        O'qildi
+                      </button>
+                    ) : null}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        </>
       ) : null}
     </div>
   );

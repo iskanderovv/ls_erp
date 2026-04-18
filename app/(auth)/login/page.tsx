@@ -7,7 +7,7 @@ export default function LoginPage() {
         <div className="mb-6 text-center">
           <h1 className="text-2xl font-semibold">Tizimga kirish</h1>
           <p className="mt-1 text-sm text-slate-500">
-            O'quv markaz xodimlari uchun ichki platforma
+            EduMarkaz xodimlari uchun ichki platforma
           </p>
         </div>
         <LoginForm />

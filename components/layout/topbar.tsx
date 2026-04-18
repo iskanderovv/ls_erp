@@ -1,7 +1,5 @@
-import { Badge } from "@/components/ui/badge";
 import { LogoutButton } from "@/components/layout/logout-button";
 import { NotificationBell } from "@/components/notifications/notification-bell";
-import { roleLabels } from "@/lib/constants";
 import type { AppRole } from "@/lib/auth/roles";
 
 type TopbarProps = {
@@ -22,7 +20,6 @@ export function Topbar({ firstName, lastName, role }: TopbarProps) {
 
       <div className="flex items-center gap-3">
         <NotificationBell />
-        <Badge>{roleLabels[role]}</Badge>
         <LogoutButton />
       </div>
     </header>

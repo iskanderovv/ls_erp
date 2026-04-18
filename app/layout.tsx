@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "O'quv Markaz ERP",
+  title: "EduMarkaz",
   description: "Ta'lim markazi uchun ichki boshqaruv tizimi",
 };
 

@@ -1,6 +1,6 @@
 import type { AppRole } from "@/lib/auth/roles";
 
-export const APP_NAME = "O'quv Markaz ERP";
+export const APP_NAME = "EduMarkaz";
 export const SESSION_COOKIE_NAME = "lc_session";
 
 export const roleLabels: Record<AppRole, string> = {

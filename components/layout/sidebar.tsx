@@ -12,9 +12,9 @@ export function Sidebar({ role }: { role: AppRole }) {
   const items = navItemsForRole(role);
 
   return (
-    <aside className="hidden w-64 border-r border-slate-200 bg-white p-4 lg:block">
+    <aside className="hidden w-64 border-r border-slate-200 bg-white p-4 lg:block overflow-y-auto h-full">
       <div className="mb-6 px-2">
-        <p className="text-lg font-semibold">O'quv Markaz ERP</p>
+        <p className="text-lg font-semibold">EduMarkaz</p>
         <p className="text-xs text-slate-500">Ichki boshqaruv tizimi</p>
       </div>
 

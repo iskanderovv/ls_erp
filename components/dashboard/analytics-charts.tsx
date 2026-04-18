@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   Bar,
@@ -18,6 +19,7 @@ import {
 } from "recharts";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SubscriptionModal } from "@/components/dashboard/subscription-modal";
 import { useFeatureAccess } from "@/lib/hooks/use-feature-access";
 import { queryKeys } from "@/lib/query-keys";
 
@@ -36,6 +38,7 @@ async function fetchAnalytics() {
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
 
 export function AnalyticsCharts() {
+  const [showUpgrade, setShowUpgrade] = useState(false);
   const hasAccess = useFeatureAccess("ANALYTICS");
   const { data, isLoading, isError } = useQuery({
     queryKey: [...queryKeys.dashboard.summary, "analytics"],
@@ -44,18 +47,7 @@ export function AnalyticsCharts() {
   });
 
   if (!hasAccess) {
-    return (
-      <Card className="bg-slate-50 border-dashed">
-        <CardContent className="py-10 text-center">
-          <p className="text-slate-500 font-medium">
-            Murakkab tahlillar (Analytics) faqat PRO va ENTERPRISE tariflarida mavjud.
-          </p>
-          <button className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700 transition-colors">
-            Tarifni yangilash
-          </button>
-        </CardContent>
-      </Card>
-    );
+    return null;
   }
 
   if (isLoading) return <div className="p-4 text-center">Tahlillar yuklanmoqda...</div>;
