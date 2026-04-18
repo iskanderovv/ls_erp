@@ -117,6 +117,18 @@ enum FinancialTransactionType {
   SALARY
 }
 
+enum SubscriptionPlan {
+  BASIC
+  PRO
+  ENTERPRISE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  TRIAL
+  EXPIRED
+}
+
 enum NotificationType {
   STUDENT_ABSENT
   PAYMENT_OVERDUE
@@ -167,8 +179,41 @@ enum TelegramDeliveryStatus {
   SKIPPED
 }
 
+model Organization {
+  id                 String               @id @default(cuid())
+  name               String
+  subscriptionPlan   SubscriptionPlan     @default(BASIC)
+  subscriptionStatus SubscriptionStatus   @default(TRIAL)
+  trialEndsAt        DateTime?
+  featureFlags       Json?
+  users              User[]
+  branches           Branch[]
+  students           Student[]
+  leads              Lead[]
+  teachers           Teacher[]
+  groups             StudyGroup[]
+  attendances        Attendance[]
+  payments           Payment[]
+  studentFees        StudentFee[]
+  paymentReminders   PaymentReminder[]
+  salaryRecords      SalaryRecord[]
+  salaryPayments     SalaryPayment[]
+  expenses           Expense[]
+  transactions       FinancialTransaction[]
+  auditLogs          AuditLog[]
+  notifications      Notification[]
+  tasks              Task[]
+  telegramMessages   TelegramMessage[]
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  @@index([subscriptionPlan, subscriptionStatus])
+}
+
 model Branch {
   id               String            @id @default(cuid())
+  organizationId   String
+  organization     Organization      @relation(fields: [organizationId], references: [id], onDelete: Restrict)
   name             String
   phone            String
   address          String
@@ -192,10 +237,14 @@ model Branch {
   telegramMessages TelegramMessage[]
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
+
+  @@index([organizationId, createdAt])
 }
 
 model User {
   id             String            @id @default(cuid())
+  organizationId String?
+  organization   Organization?     @relation(fields: [organizationId], references: [id], onDelete: SetNull)
   firstName      String
   lastName       String
   phone          String            @unique
@@ -221,6 +270,7 @@ model User {
   updatedAt      DateTime          @updatedAt
 
   @@index([branchId])
+  @@index([organizationId])
 }
 
 model Student {

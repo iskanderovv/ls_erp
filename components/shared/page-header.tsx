@@ -17,7 +17,7 @@ export function PageHeader({ title, description, actionHref, actionLabel }: Page
       {actionHref && actionLabel ? (
         <Link
           href={actionHref}
-          className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-slate-800"
+          className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium !text-white hover:bg-slate-800 hover:!text-white"
         >
           {actionLabel}
         </Link>
