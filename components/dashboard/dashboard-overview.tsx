@@ -2,6 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 
+import { AnalyticsCharts } from "@/components/dashboard/analytics-charts";
+import { SmartInsights } from "@/components/dashboard/smart-insights";
 import { SmartOperations } from "@/components/dashboard/smart-operations";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -87,6 +89,10 @@ export function DashboardOverview() {
           />
         </div>
       ) : null}
+
+      <AnalyticsCharts />
+
+      <SmartInsights />
 
       <SmartOperations />
 

@@ -1,0 +1,26 @@
+import { NextRequest, NextResponse } from "next/server";
+
+import { authorizeRequest } from "@/lib/auth/api";
+import { prisma } from "@/lib/prisma";
+
+export async function GET(request: NextRequest) {
+  const auth = await authorizeRequest(request);
+  if (!auth.ok) return auth.response;
+
+  const organization = await prisma.organization.findUnique({
+    where: { id: auth.session.organizationId },
+    select: {
+      id: true,
+      name: true,
+      subscriptionPlan: true,
+      subscriptionStatus: true,
+      featureFlags: true,
+    },
+  });
+
+  if (!organization) {
+    return NextResponse.json({ error: "Tashkilot topilmadi." }, { status: 404 });
+  }
+
+  return NextResponse.json(organization);
+}

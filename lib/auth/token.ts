@@ -14,6 +14,7 @@ function authSecret() {
 
 export type SessionPayload = {
   userId: string;
+  organizationId: string;
   role: AppRole;
   firstName: string;
   lastName: string;

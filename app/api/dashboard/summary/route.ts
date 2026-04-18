@@ -2,6 +2,7 @@ import { GroupStatus, StudentFeeStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 import { authorizeRequest } from "@/lib/auth/api";
+import { getBranchFilter } from "@/lib/auth/branch-scope";
 import { hasPermission } from "@/lib/auth/permissions";
 import { feeExpectedAmount } from "@/lib/debt";
 import { prisma } from "@/lib/prisma";
@@ -10,12 +11,7 @@ export async function GET(request: NextRequest) {
   const auth = await authorizeRequest(request, "dashboard.view");
   if (!auth.ok) return auth.response;
 
-  const scopedBranchId =
-    auth.session.role === "SUPER_ADMIN" || auth.session.role === "ADMIN"
-      ? null
-      : (auth.session.branchId ?? "__no_branch__");
-
-  const branchFilter = scopedBranchId ? { branchId: scopedBranchId } : {};
+  const branchFilter = getBranchFilter(auth.session);
 
   const [students, activeGroups, teachers, leads, recentStudents, recentLeads] =
     await Promise.all([

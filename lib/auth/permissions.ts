@@ -89,7 +89,8 @@ const API_PERMISSIONS: Array<{ prefix: string; permission: Permission }> = [
 ];
 
 export function hasPermission(role: AppRole, permission: Permission) {
-  return PERMISSIONS[permission].includes(role);
+  if (!PERMISSIONS[permission]) return false;
+  return (PERMISSIONS[permission] as readonly string[]).includes(role);
 }
 
 export function routePermission(pathname: string): Permission | null {

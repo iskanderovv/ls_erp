@@ -243,8 +243,8 @@ model Branch {
 
 model User {
   id             String            @id @default(cuid())
-  organizationId String?
-  organization   Organization?     @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  organizationId String
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Restrict)
   firstName      String
   lastName       String
   phone          String            @unique
@@ -275,6 +275,8 @@ model User {
 
 model Student {
   id                String            @id @default(cuid())
+  organizationId    String
+  organization      Organization      @relation(fields: [organizationId], references: [id], onDelete: Restrict)
   firstName         String
   lastName          String
   phone             String
@@ -302,12 +304,15 @@ model Student {
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
 
+  @@index([organizationId])
   @@index([branchId])
   @@index([status])
 }
 
 model Lead {
   id                String      @id @default(cuid())
+  organizationId    String
+  organization      Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
   firstName         String
   lastName          String?
   phone             String
@@ -326,6 +331,7 @@ model Lead {
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
 
+  @@index([organizationId])
   @@index([branchId])
   @@index([assignedToId])
   @@index([status])
@@ -333,6 +339,8 @@ model Lead {
 
 model Teacher {
   id                String         @id @default(cuid())
+  organizationId    String
+  organization      Organization   @relation(fields: [organizationId], references: [id], onDelete: Restrict)
   firstName         String
   lastName          String
   phone             String
@@ -349,12 +357,15 @@ model Teacher {
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
 
+  @@index([organizationId])
   @@index([branchId])
   @@index([status])
 }
 
 model StudyGroup {
   id         String            @id @default(cuid())
+  organizationId String
+  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Restrict)
   name       String
   subject    String
   teacherId  String?
@@ -374,6 +385,7 @@ model StudyGroup {
   createdAt  DateTime          @default(now())
   updatedAt  DateTime          @updatedAt
 
+  @@index([organizationId])
   @@index([branchId])
   @@index([teacherId])
   @@index([status])
@@ -391,40 +403,46 @@ model GroupStudent {
 }
 
 model Attendance {
-  id        String           @id @default(cuid())
-  studentId String
-  groupId   String
-  date      DateTime
-  status    AttendanceStatus
-  note      String?
-  student   Student          @relation(fields: [studentId], references: [id], onDelete: Restrict)
-  group     StudyGroup       @relation(fields: [groupId], references: [id], onDelete: Restrict)
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
+  id             String           @id @default(cuid())
+  organizationId String
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  studentId      String
+  groupId        String
+  date           DateTime
+  status         AttendanceStatus
+  note           String?
+  student        Student          @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  group          StudyGroup       @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
 
   @@unique([studentId, groupId, date])
+  @@index([organizationId])
   @@index([groupId, date])
   @@index([studentId, date])
 }
 
 model Payment {
-  id            String        @id @default(cuid())
-  studentId     String
-  groupId       String?
-  branchId      String
-  amountCents   Int
-  paymentMethod PaymentMethod
-  paidAt        DateTime
-  createdById   String
-  note          String?
-  student       Student       @relation(fields: [studentId], references: [id], onDelete: Restrict)
-  group         StudyGroup?   @relation(fields: [groupId], references: [id], onDelete: SetNull)
-  branch        Branch        @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  createdBy     User          @relation("PaymentCreator", fields: [createdById], references: [id], onDelete: Restrict)
-  transaction   FinancialTransaction?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id             String        @id @default(cuid())
+  organizationId String
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  studentId      String
+  groupId        String?
+  branchId       String
+  amountCents    Int
+  paymentMethod  PaymentMethod
+  paidAt         DateTime
+  createdById    String
+  note           String?
+  student        Student       @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  group          StudyGroup?   @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  branch         Branch        @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  createdBy      User          @relation("PaymentCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  transaction    FinancialTransaction?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
+  @@index([organizationId])
   @@index([studentId, paidAt])
   @@index([groupId, paidAt])
   @@index([branchId, paidAt])
@@ -433,6 +451,8 @@ model Payment {
 
 model StudentFee {
   id             String         @id @default(cuid())
+  organizationId String
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Restrict)
   studentId      String
   groupId        String
   branchId       String
@@ -446,25 +466,29 @@ model StudentFee {
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
+  @@index([organizationId])
   @@index([studentId, status])
   @@index([groupId, status])
   @@index([branchId, status])
 }
 
 model PaymentReminder {
-  id        String      @id @default(cuid())
-  studentId String
-  groupId   String?
-  branchId  String
-  note      String?
-  sentAt    DateTime    @default(now())
-  sentById  String
-  student   Student     @relation(fields: [studentId], references: [id], onDelete: Restrict)
-  group     StudyGroup? @relation(fields: [groupId], references: [id], onDelete: SetNull)
-  branch    Branch      @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  sentBy    User        @relation("ReminderSender", fields: [sentById], references: [id], onDelete: Restrict)
-  createdAt DateTime    @default(now())
+  id             String      @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  studentId      String
+  groupId        String?
+  branchId       String
+  note           String?
+  sentAt         DateTime    @default(now())
+  sentById       String
+  student        Student     @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  group          StudyGroup? @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  branch         Branch      @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  sentBy         User        @relation("ReminderSender", fields: [sentById], references: [id], onDelete: Restrict)
+  createdAt      DateTime    @default(now())
 
+  @@index([organizationId])
   @@index([studentId, sentAt])
   @@index([branchId, sentAt])
   @@index([groupId, sentAt])
@@ -487,28 +511,33 @@ model TeacherSalaryConfig {
 }
 
 model SalaryRecord {
-  id                   String            @id @default(cuid())
-  teacherId            String
-  branchId             String
-  periodMonth          Int
-  periodYear           Int
+  id                    String            @id @default(cuid())
+  organizationId        String
+  organization          Organization      @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  teacherId             String
+  branchId              String
+  periodMonth           Int
+  periodYear            Int
   calculatedAmountCents Int
-  paidAmountCents      Int               @default(0)
-  status               SalaryRecordStatus @default(PENDING)
-  breakdown            Json?
-  teacher              Teacher           @relation(fields: [teacherId], references: [id], onDelete: Restrict)
-  branch               Branch            @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  payments             SalaryPayment[]
-  createdAt            DateTime          @default(now())
-  updatedAt            DateTime          @updatedAt
+  paidAmountCents       Int               @default(0)
+  status                SalaryRecordStatus @default(PENDING)
+  breakdown             Json?
+  teacher               Teacher           @relation(fields: [teacherId], references: [id], onDelete: Restrict)
+  branch                Branch            @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  payments              SalaryPayment[]
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
 
   @@unique([teacherId, periodMonth, periodYear])
+  @@index([organizationId])
   @@index([branchId, periodYear, periodMonth])
   @@index([status])
 }
 
 model SalaryPayment {
   id             String              @id @default(cuid())
+  organizationId String
+  organization   Organization        @relation(fields: [organizationId], references: [id], onDelete: Restrict)
   salaryRecordId String
   teacherId      String
   branchId       String
@@ -523,12 +552,15 @@ model SalaryPayment {
   transaction    FinancialTransaction?
   createdAt      DateTime            @default(now())
 
+  @@index([organizationId])
   @@index([teacherId, paidAt])
   @@index([branchId, paidAt])
 }
 
 model Expense {
   id             String          @id @default(cuid())
+  organizationId String
+  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Restrict)
   title          String
   amountCents    Int
   category       ExpenseCategory
@@ -543,6 +575,7 @@ model Expense {
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
 
+  @@index([organizationId])
   @@index([branchId, paidAt])
   @@index([category])
   @@index([status])
@@ -550,6 +583,8 @@ model Expense {
 
 model FinancialTransaction {
   id              String                 @id @default(cuid())
+  organizationId  String
+  organization    Organization           @relation(fields: [organizationId], references: [id], onDelete: Restrict)
   type            FinancialTransactionType
   amountCents     Int
   branchId        String
@@ -566,47 +601,56 @@ model FinancialTransaction {
   salaryPayment   SalaryPayment?         @relation(fields: [salaryPaymentId], references: [id], onDelete: SetNull)
   createdAt       DateTime               @default(now())
 
+  @@index([organizationId])
   @@index([branchId, occurredAt])
   @@index([type])
 }
 
 model AuditLog {
-  id          String   @id @default(cuid())
-  action      String
-  entityType  String
-  entityId    String
-  branchId    String?
-  createdById String
-  payload     Json?
-  branch      Branch?  @relation(fields: [branchId], references: [id], onDelete: SetNull)
-  createdBy   User     @relation("AuditLogCreator", fields: [createdById], references: [id], onDelete: Restrict)
-  createdAt   DateTime @default(now())
+  id             String   @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  action         String
+  entityType     String
+  entityId       String
+  branchId       String?
+  createdById    String
+  payload        Json?
+  branch         Branch?  @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  createdBy      User     @relation("AuditLogCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  createdAt      DateTime @default(now())
 
+  @@index([organizationId])
   @@index([branchId, createdAt])
   @@index([entityType, entityId])
 }
 
 model Notification {
-  id        String               @id @default(cuid())
-  userId    String
-  branchId  String?
-  type      NotificationType
-  severity  NotificationSeverity @default(INFO)
-  title     String
-  message   String
-  link      String?
-  isRead    Boolean              @default(false)
-  readAt    DateTime?
-  user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  branch    Branch?              @relation(fields: [branchId], references: [id], onDelete: SetNull)
-  createdAt DateTime             @default(now())
+  id             String               @id @default(cuid())
+  organizationId String
+  organization   Organization         @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  userId         String
+  branchId       String?
+  type           NotificationType
+  severity       NotificationSeverity @default(INFO)
+  title          String
+  message        String
+  link           String?
+  isRead         Boolean              @default(false)
+  readAt         DateTime?
+  user           User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  branch         Branch?              @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  createdAt      DateTime             @default(now())
 
+  @@index([organizationId])
   @@index([userId, isRead, createdAt])
   @@index([branchId, createdAt])
 }
 
 model Task {
   id                String         @id @default(cuid())
+  organizationId    String
+  organization      Organization   @relation(fields: [organizationId], references: [id], onDelete: Restrict)
   title             String
   description       String?
   assignedToId      String
@@ -623,26 +667,30 @@ model Task {
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
 
+  @@index([organizationId])
   @@index([assignedToId, status, dueDate])
   @@index([branchId, status, dueDate])
 }
 
 model TelegramMessage {
-  id          String               @id @default(cuid())
-  studentId   String
-  branchId    String
-  createdById String?
-  recipient   TelegramRecipient
-  type        TelegramMessageType
-  chatId      String
-  message     String
-  status      TelegramDeliveryStatus
-  error       String?
-  student     Student              @relation(fields: [studentId], references: [id], onDelete: Restrict)
-  branch      Branch               @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  createdBy   User?                @relation("TelegramMessageCreator", fields: [createdById], references: [id], onDelete: SetNull)
-  sentAt      DateTime             @default(now())
+  id             String               @id @default(cuid())
+  organizationId String
+  organization   Organization         @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  studentId      String
+  branchId       String
+  createdById    String?
+  recipient      TelegramRecipient
+  type           TelegramMessageType
+  chatId         String
+  message        String
+  status         TelegramDeliveryStatus
+  error          String?
+  student        Student              @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  branch         Branch               @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  createdBy      User?                @relation("TelegramMessageCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  sentAt         DateTime             @default(now())
 
+  @@index([organizationId])
   @@index([studentId, sentAt])
   @@index([branchId, sentAt])
   @@index([type, status, sentAt])

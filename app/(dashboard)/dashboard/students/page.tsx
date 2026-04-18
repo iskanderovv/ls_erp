@@ -16,7 +16,10 @@ type SearchParams = Promise<{
   q?: string;
   branchId?: string;
   status?: string;
+  page?: string;
 }>;
+
+const PAGE_SIZE = 20;
 
 export default async function StudentsPage({
   searchParams,
@@ -31,10 +34,12 @@ export default async function StudentsPage({
   const query = searchValue(params.q);
   const selectedStatus = searchValue(params.status);
   const selectedBranch = searchValue(params.branchId);
+  const page = Math.max(1, parseInt(params.page || "1", 10));
 
   const branchId = isGlobalRole ? selectedBranch || null : (session.branchId ?? "__no_branch__");
 
   const where: Prisma.StudentWhereInput = {
+    organizationId: session.organizationId,
     ...(branchId ? { branchId } : {}),
     ...(selectedStatus
       ? {
@@ -52,7 +57,7 @@ export default async function StudentsPage({
       : {}),
   };
 
-  const [students, branches] = await Promise.all([
+  const [students, totalCount, branches] = await Promise.all([
     prisma.student.findMany({
       where,
       include: {
@@ -61,12 +66,18 @@ export default async function StudentsPage({
         },
       },
       orderBy: { createdAt: "desc" },
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
     }),
+    prisma.student.count({ where }),
     prisma.branch.findMany({
+      where: { organizationId: session.organizationId },
       select: { id: true, name: true },
       orderBy: { name: "asc" },
     }),
   ]);
+
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   return (
     <div>
@@ -150,6 +161,33 @@ export default async function StudentsPage({
               ))}
             </tbody>
           </Table>
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className="mt-4 flex items-center justify-between">
+          <p className="text-sm text-slate-500">
+            Jami {totalCount} tadan {(page - 1) * PAGE_SIZE + 1}-
+            {Math.min(page * PAGE_SIZE, totalCount)} ko'rsatilmoqda
+          </p>
+          <div className="flex gap-2">
+            <Link
+              href={{ query: { ...params, page: page - 1 } }}
+              className={`rounded-md border border-slate-200 bg-white px-3 py-1 text-sm ${
+                page <= 1 ? "pointer-events-none opacity-50" : "hover:bg-slate-50"
+              }`}
+            >
+              Oldingi
+            </Link>
+            <Link
+              href={{ query: { ...params, page: page + 1 } }}
+              className={`rounded-md border border-slate-200 bg-white px-3 py-1 text-sm ${
+                page >= totalPages ? "pointer-events-none opacity-50" : "hover:bg-slate-50"
+              }`}
+            >
+              Keyingi
+            </Link>
+          </div>
         </div>
       )}
     </div>
