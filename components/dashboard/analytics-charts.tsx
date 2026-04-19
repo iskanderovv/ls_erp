@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   Bar,
@@ -39,7 +39,13 @@ const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
 
 export function AnalyticsCharts() {
   const [showUpgrade, setShowUpgrade] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const hasAccess = useFeatureAccess("ANALYTICS");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const { data, isLoading, isError } = useQuery({
     queryKey: [...queryKeys.dashboard.summary, "analytics"],
     queryFn: fetchAnalytics,
@@ -51,7 +57,7 @@ export function AnalyticsCharts() {
   }
 
   if (isLoading) return <div className="p-4 text-center">Tahlillar yuklanmoqda...</div>;
-  if (isError || !data) return null;
+  if (isError || !data || !mounted) return null;
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
@@ -60,7 +66,7 @@ export function AnalyticsCharts() {
           <CardTitle>Talabalar o'sishi (oxirgi 6 oy)</CardTitle>
         </CardHeader>
         <CardContent className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
             <BarChart data={data.monthlyGrowth}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <XAxis dataKey="name" />
@@ -77,7 +83,7 @@ export function AnalyticsCharts() {
           <CardTitle>Tushumlar o'zgarishi (oxirgi 6 oy, mln)</CardTitle>
         </CardHeader>
         <CardContent className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
             <LineChart data={data.monthlyRevenue}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <XAxis dataKey="name" />
@@ -100,7 +106,7 @@ export function AnalyticsCharts() {
           <CardTitle>Lidlar holati bo'yicha taqsimoti</CardTitle>
         </CardHeader>
         <CardContent className="h-[350px]">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
             <PieChart>
               <Pie
                 data={data.leadDistribution.filter((d) => d.value > 0)}
