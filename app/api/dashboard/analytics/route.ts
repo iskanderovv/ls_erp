@@ -52,10 +52,18 @@ export async function GET(request: NextRequest) {
     }),
   ]);
 
+  const statusTranslations: Record<LeadStatus, string> = {
+    [LeadStatus.NEW]: "Yangi",
+    [LeadStatus.CONTACTED]: "Bog'lanilgan",
+    [LeadStatus.TRIAL_LESSON]: "Sinov darsi",
+    [LeadStatus.CONVERTED]: "Talabaga aylangan",
+    [LeadStatus.LOST]: "Yo'qotilgan",
+  };
+
   const leadDistribution = Object.values(LeadStatus).map((status) => {
     const stat = leadStats.find((s) => s.status === status);
     // @ts-expect-error Prisma aggregation types can be tricky
-    return { name: status, value: stat?._count?._all ?? 0 };
+    return { name: statusTranslations[status], value: stat?._count?._all ?? 0 };
   });
 
   return NextResponse.json({

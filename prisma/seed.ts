@@ -37,9 +37,19 @@ async function main() {
   await prisma.teacher.deleteMany();
   await prisma.user.deleteMany();
   await prisma.branch.deleteMany();
+  await prisma.organization.deleteMany();
+
+  const organization = await prisma.organization.create({
+    data: {
+      name: "EduMarkaz Main",
+      subscriptionPlan: "PRO",
+      subscriptionStatus: "ACTIVE",
+    },
+  });
 
   const chilonzorBranch = await prisma.branch.create({
     data: {
+      organizationId: organization.id,
       name: "Chilonzor filiali",
       phone: "+998901112233",
       address: "Chilonzor tumani, 12-kvartal",
@@ -50,6 +60,7 @@ async function main() {
 
   const yunusobodBranch = await prisma.branch.create({
     data: {
+      organizationId: organization.id,
       name: "Yunusobod filiali",
       phone: "+998901234567",
       address: "Yunusobod tumani, 4-mavze",
@@ -62,6 +73,7 @@ async function main() {
 
   const superAdmin = await prisma.user.create({
     data: {
+      organizationId: organization.id,
       firstName: "Super",
       lastName: "Admin",
       phone: "+998900000001",
@@ -73,6 +85,7 @@ async function main() {
 
   const manager = await prisma.user.create({
     data: {
+      organizationId: organization.id,
       firstName: "Aziza",
       lastName: "Manager",
       phone: "+998900000002",
@@ -85,6 +98,7 @@ async function main() {
 
   const admin = await prisma.user.create({
     data: {
+      organizationId: organization.id,
       firstName: "Anvar",
       lastName: "Admin",
       phone: "+998900000003",
@@ -97,6 +111,7 @@ async function main() {
 
   await prisma.user.create({
     data: {
+      organizationId: organization.id,
       firstName: "Dilshod",
       lastName: "Teacher",
       phone: "+998900000004",
@@ -109,6 +124,7 @@ async function main() {
 
   const accountant = await prisma.user.create({
     data: {
+      organizationId: organization.id,
       firstName: "Malika",
       lastName: "Accountant",
       phone: "+998900000005",
@@ -121,6 +137,7 @@ async function main() {
 
   const englishTeacher = await prisma.teacher.create({
     data: {
+      organizationId: organization.id,
       firstName: "Dildora",
       lastName: "Xolmatova",
       phone: "+998911234567",
@@ -133,6 +150,7 @@ async function main() {
 
   const mathTeacher = await prisma.teacher.create({
     data: {
+      organizationId: organization.id,
       firstName: "Bekzod",
       lastName: "Karimov",
       phone: "+998935551122",
@@ -145,6 +163,7 @@ async function main() {
 
   const studentOne = await prisma.student.create({
     data: {
+      organizationId: organization.id,
       firstName: "Jasur",
       lastName: "Olimov",
       phone: "+998901111111",
@@ -161,6 +180,7 @@ async function main() {
 
   const studentTwo = await prisma.student.create({
     data: {
+      organizationId: organization.id,
       firstName: "Mohira",
       lastName: "Aliyeva",
       phone: "+998902222222",
@@ -176,6 +196,7 @@ async function main() {
 
   const ieltsGroup = await prisma.studyGroup.create({
     data: {
+      organizationId: organization.id,
       name: "IELTS Evening 01",
       subject: "IELTS",
       teacherId: englishTeacher.id,
@@ -190,6 +211,7 @@ async function main() {
 
   const satGroup = await prisma.studyGroup.create({
     data: {
+      organizationId: organization.id,
       name: "SAT Math Weekend",
       subject: "SAT Math",
       teacherId: mathTeacher.id,
@@ -217,6 +239,7 @@ async function main() {
   await prisma.studentFee.createMany({
     data: [
       {
+        organizationId: organization.id,
         studentId: studentOne.id,
         groupId: ieltsGroup.id,
         branchId: chilonzorBranch.id,
@@ -225,6 +248,7 @@ async function main() {
         status: StudentFeeStatus.ACTIVE,
       },
       {
+        organizationId: organization.id,
         studentId: studentTwo.id,
         groupId: satGroup.id,
         branchId: yunusobodBranch.id,
@@ -238,6 +262,7 @@ async function main() {
   await prisma.payment.createMany({
     data: [
       {
+        organizationId: organization.id,
         studentId: studentOne.id,
         groupId: ieltsGroup.id,
         branchId: chilonzorBranch.id,
@@ -247,6 +272,7 @@ async function main() {
         createdById: admin.id,
       },
       {
+        organizationId: organization.id,
         studentId: studentOne.id,
         groupId: ieltsGroup.id,
         branchId: chilonzorBranch.id,
@@ -256,6 +282,7 @@ async function main() {
         createdById: accountant.id,
       },
       {
+        organizationId: organization.id,
         studentId: studentTwo.id,
         groupId: satGroup.id,
         branchId: yunusobodBranch.id,
@@ -275,24 +302,28 @@ async function main() {
   await prisma.attendance.createMany({
     data: [
       {
+        organizationId: organization.id,
         studentId: studentOne.id,
         groupId: ieltsGroup.id,
         date: today,
         status: AttendanceStatus.PRESENT,
       },
       {
+        organizationId: organization.id,
         studentId: studentTwo.id,
         groupId: satGroup.id,
         date: today,
         status: AttendanceStatus.LATE,
       },
       {
+        organizationId: organization.id,
         studentId: studentOne.id,
         groupId: ieltsGroup.id,
         date: yesterday,
         status: AttendanceStatus.ABSENT,
       },
       {
+        organizationId: organization.id,
         studentId: studentTwo.id,
         groupId: satGroup.id,
         date: yesterday,
@@ -304,6 +335,7 @@ async function main() {
   await prisma.paymentReminder.createMany({
     data: [
       {
+        organizationId: organization.id,
         studentId: studentOne.id,
         groupId: ieltsGroup.id,
         branchId: chilonzorBranch.id,
@@ -316,6 +348,7 @@ async function main() {
   await prisma.lead.createMany({
     data: [
       {
+        organizationId: organization.id,
         firstName: "Shohruh",
         lastName: "Nazarov",
         phone: "+998909998877",
@@ -327,6 +360,7 @@ async function main() {
         followUpDueAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
       },
       {
+        organizationId: organization.id,
         firstName: "Sevara",
         phone: "+998900101010",
         source: LeadSource.REFERRAL,
@@ -341,6 +375,7 @@ async function main() {
   await prisma.task.createMany({
     data: [
       {
+        organizationId: organization.id,
         title: "Shohruh lidiga qo'ng'iroq qilish",
         description: "Follow-up muddatidan o'tib ketgan.",
         assignedToId: manager.id,
@@ -351,6 +386,7 @@ async function main() {
         dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000),
       },
       {
+        organizationId: organization.id,
         title: "Jasur bilan davomat bo'yicha bog'lanish",
         assignedToId: manager.id,
         createdById: admin.id,
@@ -366,6 +402,7 @@ async function main() {
   await prisma.notification.createMany({
     data: [
       {
+        organizationId: organization.id,
         userId: manager.id,
         branchId: chilonzorBranch.id,
         type: "NEW_LEAD",
@@ -375,6 +412,7 @@ async function main() {
         link: "/dashboard/leads",
       },
       {
+        organizationId: organization.id,
         userId: admin.id,
         branchId: chilonzorBranch.id,
         type: "PAYMENT_OVERDUE",

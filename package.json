@@ -3,15 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npm run db:push && npm run prisma:generate && next dev",
+    "dev": "next dev",
     "build": "npm run prisma:generate && next build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "db:prepare": "node scripts/ensure-postgres-database.mjs",
-    "db:push": "npm run db:prepare && prisma db push",
-    "db:seed": "npm run db:prepare && prisma db seed",
-    "db:setup": "npm run db:push && npm run db:seed",
     "prisma:generate": "prisma generate",
     "jobs:daily": "node scripts/run-daily-automation.mjs"
   },

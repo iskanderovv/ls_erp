@@ -103,18 +103,21 @@ export function AnalyticsCharts() {
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={data.leadDistribution}
+                data={data.leadDistribution.filter((d) => d.value > 0)}
                 cx="50%"
                 cy="50%"
-                labelLine={false}
+                labelLine={true}
                 label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                outerRadius={100}
+                outerRadius={80}
                 fill="#8884d8"
                 dataKey="value"
+                minAngle={15}
               >
-                {data.leadDistribution.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
+                {data.leadDistribution
+                  .filter((d) => d.value > 0)
+                  .map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
               </Pie>
               <Tooltip />
               <Legend verticalAlign="bottom" />
