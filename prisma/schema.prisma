@@ -129,6 +129,12 @@ enum SubscriptionStatus {
   EXPIRED
 }
 
+enum OrganizationStatus {
+  ACTIVE
+  BLOCKED
+  INACTIVE
+}
+
 enum NotificationType {
   STUDENT_ABSENT
   PAYMENT_OVERDUE
@@ -184,8 +190,13 @@ model Organization {
   name               String
   subscriptionPlan   SubscriptionPlan     @default(BASIC)
   subscriptionStatus SubscriptionStatus   @default(TRIAL)
+  status             OrganizationStatus   @default(ACTIVE)
+  blockReason        String?
+  ownerId            String?
+  owner              User?                @relation("OrganizationOwner", fields: [ownerId], references: [id], onDelete: SetNull)
   trialEndsAt        DateTime?
   featureFlags       Json?
+  subscriptions      Subscription[]
   users              User[]
   branches           Branch[]
   students           Student[]
@@ -208,6 +219,8 @@ model Organization {
   updatedAt          DateTime             @updatedAt
 
   @@index([subscriptionPlan, subscriptionStatus])
+  @@index([status])
+  @@index([ownerId])
 }
 
 model Branch {
@@ -260,6 +273,8 @@ model User {
   createdSalaryPayments SalaryPayment[] @relation("SalaryPaymentCreator")
   transactions   FinancialTransaction[] @relation("TransactionCreator")
   auditLogs      AuditLog[]        @relation("AuditLogCreator")
+  ownedOrganizations Organization[] @relation("OrganizationOwner")
+  superAdminAuditLogs SuperAdminAuditLog[] @relation("SuperAdminAuditLogActor")
   notifications  Notification[]
   assignedTasks  Task[]            @relation("TaskAssignee")
   createdTasks   Task[]            @relation("TaskCreator")
@@ -271,6 +286,51 @@ model User {
 
   @@index([branchId])
   @@index([organizationId])
+}
+
+model Plan {
+  id           String      @id @default(cuid())
+  name         String
+  code         SubscriptionPlan @unique
+  priceCents   Int
+  maxStudents  Int?
+  maxBranches  Int?
+  featureFlags Json?
+  isActive     Boolean     @default(true)
+  subscriptions Subscription[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model Subscription {
+  id             String             @id @default(cuid())
+  organizationId String
+  planId         String
+  status         SubscriptionStatus @default(TRIAL)
+  startDate      DateTime           @default(now())
+  endDate        DateTime?
+  organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  plan           Plan               @relation(fields: [planId], references: [id], onDelete: Restrict)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@index([organizationId, status])
+  @@index([planId, status])
+  @@index([endDate])
+}
+
+model SuperAdminAuditLog {
+  id            String   @id @default(cuid())
+  action        String
+  entityType    String
+  entityId      String?
+  performedById String
+  payload       Json?
+  performedBy   User     @relation("SuperAdminAuditLogActor", fields: [performedById], references: [id], onDelete: Restrict)
+  createdAt     DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([performedById, createdAt])
 }
 
 model Student {

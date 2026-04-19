@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { OrganizationStatus } from "@prisma/client";
 
+import { canAccessSystem, INACTIVE_SUBSCRIPTION_MESSAGE } from "@/lib/auth/access";
 import { hasPermission, type Permission } from "@/lib/auth/permissions";
+import { prisma } from "@/lib/prisma";
 import { SESSION_NAME, verifySessionToken } from "@/lib/auth/token";
 
 type AuthResult =
@@ -30,6 +33,40 @@ export async function authorizeRequest(
     return {
       ok: false,
       response: NextResponse.json({ error: "Sessiya muddati tugagan." }, { status: 401 }),
+    };
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.userId },
+    select: {
+      status: true,
+      role: true,
+      organization: {
+        select: {
+          subscriptionStatus: true,
+        },
+      },
+    },
+  });
+
+  if (!user) {
+    return {
+      ok: false,
+      response: NextResponse.json({ error: "Foydalanuvchi topilmadi." }, { status: 401 }),
+    };
+  }
+
+  if (
+    !canAccessSystem({
+      role: user.role,
+      userStatus: user.status,
+      organizationStatus: OrganizationStatus.ACTIVE,
+      subscriptionStatus: user.organization.subscriptionStatus,
+    })
+  ) {
+    return {
+      ok: false,
+      response: NextResponse.json({ error: INACTIVE_SUBSCRIPTION_MESSAGE }, { status: 403 }),
     };
   }
 

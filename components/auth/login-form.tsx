@@ -26,11 +26,11 @@ export function LoginForm() {
   const onSubmit = form.handleSubmit(async (values) => {
     setSubmitError("");
     try {
-      await apiClient("/api/auth/login", {
+      const data = await apiClient<{ success: boolean; redirectTo?: string }>("/api/auth/login", {
         method: "POST",
         body: JSON.stringify(values),
       });
-      router.replace("/dashboard");
+      router.replace(data.redirectTo ?? "/dashboard");
       router.refresh();
     } catch (error) {
       if (error instanceof ApiError) {

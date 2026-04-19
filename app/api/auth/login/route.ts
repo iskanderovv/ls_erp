@@ -1,8 +1,8 @@
 import bcrypt from "bcryptjs";
-import { Prisma } from "@prisma/client";
-import { UserStatus } from "@prisma/client";
+import { OrganizationStatus, Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
+import { canAccessSystem, INACTIVE_SUBSCRIPTION_MESSAGE } from "@/lib/auth/access";
 import { SESSION_NAME, createSessionToken } from "@/lib/auth/token";
 import { prisma } from "@/lib/prisma";
 import { loginSchema } from "@/lib/validators/schemas";
@@ -14,14 +14,31 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Login ma'lumotlari noto'g'ri." }, { status: 400 });
   }
 
-  let user: Awaited<ReturnType<typeof prisma.user.findFirst>>;
+  type LoginUser = Prisma.UserGetPayload<{
+    include: {
+      organization: {
+        select: {
+          subscriptionStatus: true;
+        };
+      };
+    };
+  }>;
+
+  let user: LoginUser | null = null;
   try {
-    user = await prisma.user.findFirst({
+    const fetchedUser = await prisma.user.findFirst({
       where: {
         phone: parsed.data.phone,
-        status: UserStatus.ACTIVE,
+      },
+      include: {
+        organization: {
+          select: {
+            subscriptionStatus: true,
+          },
+        },
       },
     });
+    user = fetchedUser;
   } catch (error) {
     if (error instanceof Prisma.PrismaClientInitializationError) {
       return NextResponse.json(
@@ -44,6 +61,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Telefon yoki parol noto'g'ri." }, { status: 401 });
   }
 
+  if (
+    !canAccessSystem({
+      role: user.role,
+      userStatus: user.status,
+      organizationStatus: OrganizationStatus.ACTIVE,
+      subscriptionStatus: user.organization.subscriptionStatus,
+    })
+  ) {
+    return NextResponse.json({ error: INACTIVE_SUBSCRIPTION_MESSAGE }, { status: 403 });
+  }
+
   const token = await createSessionToken({
     userId: user.id,
     organizationId: user.organizationId,
@@ -53,7 +81,8 @@ export async function POST(request: NextRequest) {
     branchId: user.branchId,
   });
 
-  const response = NextResponse.json({ success: true });
+  const redirectTo = user.role === "SUPER_ADMIN" ? "/admin" : "/dashboard";
+  const response = NextResponse.json({ success: true, redirectTo });
   response.cookies.set(SESSION_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

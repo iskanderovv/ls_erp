@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
+import { BranchAnalytics } from "@/components/branches/branch-analytics";
 import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { branchStatusLabels } from "@/lib/constants";
@@ -32,46 +34,72 @@ export default async function BranchDetailsPage({ params }: Params) {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={branch.name} description="Filial haqida batafsil ma'lumot" />
+      <div className="flex items-center gap-4">
+        <Link href="/dashboard/branches" className="rounded-full border border-slate-200 bg-white p-2 hover:bg-slate-50">
+          <ArrowLeft className="h-4 w-4" />
+        </Link>
+        <PageHeader title={branch.name} description="Filial haqida batafsil ma'lumot va tahlillar" />
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Asosiy ma'lumotlar</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-3 text-sm md:grid-cols-2">
-          <p>
-            <span className="text-slate-500">Telefon:</span> {branch.phone}
-          </p>
-          <p>
-            <span className="text-slate-500">Holat:</span> {branchStatusLabels[branch.status as keyof typeof branchStatusLabels]}
-          </p>
-          <p>
-            <span className="text-slate-500">Manzil:</span> {branch.address}
-          </p>
-          <p>
-            <span className="text-slate-500">Mo'ljal:</span> {branch.landmark ?? "-"}
-          </p>
-          <p>
-            <span className="text-slate-500">Yaratilgan:</span> {formatDate(branch.createdAt)}
-          </p>
-        </CardContent>
-      </Card>
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-1 space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm font-semibold uppercase tracking-wider text-slate-500">Asosiy ma'lumotlar</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm">
+              <div>
+                <p className="text-slate-500">Telefon</p>
+                <p className="font-medium">{branch.phone}</p>
+              </div>
+              <div>
+                <p className="text-slate-500">Holat</p>
+                <p className="font-medium">{branchStatusLabels[branch.status as keyof typeof branchStatusLabels]}</p>
+              </div>
+              <div>
+                <p className="text-slate-500">Manzil</p>
+                <p className="font-medium">{branch.address}</p>
+              </div>
+              <div>
+                <p className="text-slate-500">Mo'ljal</p>
+                <p className="font-medium">{branch.landmark ?? "-"}</p>
+              </div>
+              <div>
+                <p className="text-slate-500">Yaratilgan</p>
+                <p className="font-medium">{formatDate(branch.createdAt)}</p>
+              </div>
+            </CardContent>
+          </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Statistika</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-3 text-sm md:grid-cols-2">
-          <p>Talabalar: {branch._count.students}</p>
-          <p>Ustozlar: {branch._count.teachers}</p>
-          <p>Guruhlar: {branch._count.groups}</p>
-          <p>Lidlar: {branch._count.leads}</p>
-        </CardContent>
-      </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm font-semibold uppercase tracking-wider text-slate-500">Tezkor statistika</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-2 gap-4">
+              <div className="rounded-lg bg-blue-50 p-3 text-center">
+                <p className="text-xl font-bold text-blue-700">{branch._count.students}</p>
+                <p className="text-xs text-blue-600">Talabalar</p>
+              </div>
+              <div className="rounded-lg bg-green-50 p-3 text-center">
+                <p className="text-xl font-bold text-green-700">{branch._count.teachers}</p>
+                <p className="text-xs text-green-600">Ustozlar</p>
+              </div>
+              <div className="rounded-lg bg-purple-50 p-3 text-center">
+                <p className="text-xl font-bold text-purple-700">{branch._count.groups}</p>
+                <p className="text-xs text-purple-600">Guruhlar</p>
+              </div>
+              <div className="rounded-lg bg-orange-50 p-3 text-center">
+                <p className="text-xl font-bold text-orange-700">{branch._count.leads}</p>
+                <p className="text-xs text-orange-600">Lidlar</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-      <Link href="/dashboard/branches" className="text-sm text-blue-700 hover:underline">
-        Filiallar ro'yxatiga qaytish
-      </Link>
+        <div className="lg:col-span-2">
+          <BranchAnalytics branchId={id} />
+        </div>
+      </div>
     </div>
   );
 }

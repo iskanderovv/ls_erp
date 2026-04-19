@@ -39,6 +39,60 @@ export const branchSchema = z.object({
   status: z.enum(["ACTIVE", "INACTIVE"]),
 });
 
+export const organizationCreateSchema = z.object({
+  name: z.string().trim().min(2, "Tashkilot nomi kamida 2 ta belgi bo'lishi kerak."),
+  subscriptionPlan: z.enum(["BASIC", "PRO", "ENTERPRISE"]),
+});
+
+export const organizationUpdateSchema = z
+  .object({
+    name: z.string().trim().min(2).optional(),
+    status: z.enum(["ACTIVE", "BLOCKED", "INACTIVE"]).optional(),
+    blockReason: optionalText,
+    subscriptionPlan: z.enum(["BASIC", "PRO", "ENTERPRISE"]).optional(),
+    ownerId: z.string().trim().optional().or(z.literal("")),
+  })
+  .refine((value) => Object.values(value).some((item) => item !== undefined), {
+    message: "Kamida bitta maydon yuboring.",
+  });
+
+export const planCreateSchema = z.object({
+  name: z.string().trim().min(2, "Plan nomi kamida 2 ta belgidan iborat bo'lishi kerak."),
+  code: z.enum(["BASIC", "PRO", "ENTERPRISE"]),
+  price: z.coerce.number().min(0, "Narx 0 dan kichik bo'lmasligi kerak."),
+  maxStudents: z.coerce.number().int().min(1).max(500000).optional().or(z.literal("")),
+  maxBranches: z.coerce.number().int().min(1).max(10000).optional().or(z.literal("")),
+  featureFlags: optionalText,
+});
+
+export const planUpdateSchema = z
+  .object({
+    name: z.string().trim().min(2).optional(),
+    price: z.coerce.number().min(0).optional(),
+    maxStudents: z.coerce.number().int().min(1).max(500000).optional().or(z.literal("")),
+    maxBranches: z.coerce.number().int().min(1).max(10000).optional().or(z.literal("")),
+    featureFlags: optionalText,
+    isActive: z.boolean().optional(),
+  })
+  .refine((value) => Object.values(value).some((item) => item !== undefined), {
+    message: "Kamida bitta maydon yuboring.",
+  });
+
+export const subscriptionUpdateSchema = z
+  .object({
+    planId: z.string().trim().min(1).optional(),
+    status: z.enum(["TRIAL", "ACTIVE", "EXPIRED"]).optional(),
+    startDate: optionalDate,
+    endDate: optionalDate,
+  })
+  .refine((value) => Object.values(value).some((item) => item !== undefined), {
+    message: "Kamida bitta maydon yuboring.",
+  });
+
+export const ownerStatusUpdateSchema = z.object({
+  status: z.enum(["ACTIVE", "INACTIVE"]),
+});
+
 export const studentSchema = z.object({
   firstName: z.string().trim().min(2, "Ism majburiy."),
   lastName: z.string().trim().min(2, "Familiya majburiy."),
@@ -242,6 +296,11 @@ export const automationRunSchema = z.object({
 
 export type LoginFormValues = z.infer<typeof loginSchema>;
 export type BranchFormValues = z.infer<typeof branchSchema>;
+export type OrganizationCreateFormValues = z.infer<typeof organizationCreateSchema>;
+export type OrganizationUpdateFormValues = z.infer<typeof organizationUpdateSchema>;
+export type PlanCreateFormValues = z.infer<typeof planCreateSchema>;
+export type PlanUpdateFormValues = z.infer<typeof planUpdateSchema>;
+export type SubscriptionUpdateFormValues = z.infer<typeof subscriptionUpdateSchema>;
 export type StudentFormValues = z.infer<typeof studentSchema>;
 export type LeadFormValues = z.infer<typeof leadSchema>;
 export type TeacherFormValues = z.infer<typeof teacherSchema>;

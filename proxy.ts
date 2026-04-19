@@ -6,6 +6,10 @@ import { SESSION_NAME, verifySessionToken } from "@/lib/auth/token";
 const PUBLIC_ROUTES = ["/login"];
 const PUBLIC_API_ROUTES = ["/api/auth/login", "/api/jobs/daily"];
 
+function defaultLandingPath(role?: string) {
+  return role === "SUPER_ADMIN" ? "/admin" : "/dashboard";
+}
+
 function isPublicRoute(pathname: string) {
   return PUBLIC_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 }
@@ -21,19 +25,19 @@ export async function proxy(request: NextRequest) {
 
   if (isPublicRoute(pathname)) {
     if (session) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+      return NextResponse.redirect(new URL(defaultLandingPath(session.role), request.url));
     }
     return NextResponse.next();
   }
 
-  if (pathname.startsWith("/dashboard")) {
+  if (pathname.startsWith("/dashboard") || pathname.startsWith("/admin")) {
     if (!session) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
 
     const permission = routePermission(pathname);
     if (permission && !hasPermission(session.role, permission)) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+      return NextResponse.redirect(new URL(defaultLandingPath(session.role), request.url));
     }
   }
 

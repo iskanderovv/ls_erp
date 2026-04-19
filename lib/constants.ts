@@ -151,3 +151,21 @@ export const telegramMessageTypeLabels = {
   PAYMENT_OVERDUE: "To'lov eslatmasi",
   SYSTEM_ALERT: "Tizim xabari",
 } as const;
+
+export const subscriptionPlanLabels = {
+  BASIC: "Basic",
+  PRO: "Pro",
+  ENTERPRISE: "Enterprise",
+} as const;
+
+export const subscriptionStatusLabels = {
+  ACTIVE: "Faol",
+  TRIAL: "Trial",
+  EXPIRED: "Muddati tugagan",
+} as const;
+
+export const organizationStatusLabels = {
+  ACTIVE: "Faol",
+  BLOCKED: "Bloklangan",
+  INACTIVE: "Nofaol",
+} as const;

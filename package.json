@@ -9,6 +9,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "prisma:generate": "prisma generate",
+    "seed:admins": "tsx prisma/admins.ts",
     "jobs:daily": "node scripts/run-daily-automation.mjs"
   },
   "dependencies": {

@@ -7,6 +7,8 @@ import {
   PaymentMethod,
   PrismaClient,
   Role,
+  SubscriptionPlan,
+  SubscriptionStatus,
   StudentFeeStatus,
   StudentStatus,
   TeacherStatus,
@@ -17,6 +19,9 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
+  await prisma.superAdminAuditLog.deleteMany();
+  await prisma.subscription.deleteMany();
+  await prisma.plan.deleteMany();
   await prisma.paymentReminder.deleteMany();
   await prisma.telegramMessage.deleteMany();
   await prisma.notification.deleteMany();
@@ -38,6 +43,36 @@ async function main() {
   await prisma.user.deleteMany();
   await prisma.branch.deleteMany();
   await prisma.organization.deleteMany();
+
+  const basicPlan = await prisma.plan.create({
+    data: {
+      name: "Basic",
+      code: SubscriptionPlan.BASIC,
+      priceCents: 9900000,
+      maxStudents: 100,
+      maxBranches: 1,
+    },
+  });
+  const proPlan = await prisma.plan.create({
+    data: {
+      name: "Pro",
+      code: SubscriptionPlan.PRO,
+      priceCents: 29900000,
+      maxStudents: 500,
+      maxBranches: 3,
+      featureFlags: { ANALYTICS: true, REPORTS: true },
+    },
+  });
+  await prisma.plan.create({
+    data: {
+      name: "Enterprise",
+      code: SubscriptionPlan.ENTERPRISE,
+      priceCents: 99900000,
+      maxStudents: 5000,
+      maxBranches: 10,
+      featureFlags: { ANALYTICS: true, REPORTS: true, AUTOMATION: true },
+    },
+  });
 
   const organization = await prisma.organization.create({
     data: {
@@ -133,6 +168,29 @@ async function main() {
       status: UserStatus.ACTIVE,
       branchId: yunusobodBranch.id,
     },
+  });
+
+  await prisma.organization.update({
+    where: { id: organization.id },
+    data: { ownerId: admin.id },
+  });
+
+  await prisma.subscription.createMany({
+    data: [
+      {
+        organizationId: organization.id,
+        planId: proPlan.id,
+        status: SubscriptionStatus.ACTIVE,
+        startDate: new Date("2026-01-01"),
+      },
+      {
+        organizationId: organization.id,
+        planId: basicPlan.id,
+        status: SubscriptionStatus.TRIAL,
+        startDate: new Date("2025-12-01"),
+        endDate: new Date("2025-12-30"),
+      },
+    ],
   });
 
   const englishTeacher = await prisma.teacher.create({

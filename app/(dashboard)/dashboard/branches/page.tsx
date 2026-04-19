@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { Edit, Eye } from "lucide-react";
 
+import { DeleteBranchButton } from "@/components/branches/delete-branch-button";
 import { PageHeader } from "@/components/shared/page-header";
+import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Table, TableCell, TableHead } from "@/components/ui/table";
 import { branchStatusLabels } from "@/lib/constants";
@@ -69,16 +72,20 @@ export default async function BranchesPage() {
                   <TableCell>{formatDate(branch.createdAt)}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      <Link className="text-sm text-blue-700 hover:underline" href={`/dashboard/branches/${branch.id}`}>
-                        Ko'rish
-                      </Link>
-                      {canManage ? (
-                        <Link
-                          className="text-sm text-slate-700 hover:underline"
-                          href={`/dashboard/branches/${branch.id}/edit`}
-                        >
-                          Tahrirlash
+                      <Button asChild variant="outline" size="sm" className="h-8 px-2 border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800">
+                        <Link href={`/dashboard/branches/${branch.id}`}>
+                          <Eye className="h-4 w-4" />
                         </Link>
+                      </Button>
+                      {canManage ? (
+                        <>
+                          <Button asChild variant="outline" size="sm" className="h-8 px-2 border-amber-200 text-amber-700 hover:bg-amber-50 hover:text-amber-800">
+                            <Link href={`/dashboard/branches/${branch.id}/edit`}>
+                              <Edit className="h-4 w-4" />
+                            </Link>
+                          </Button>
+                          <DeleteBranchButton id={branch.id} />
+                        </>
                       ) : null}
                     </div>
                   </TableCell>

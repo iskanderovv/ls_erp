@@ -9,6 +9,12 @@ const APP_ALL_ROLES: readonly AppRole[] = [
 ];
 
 export const PERMISSIONS = {
+  "admin.panel": ["SUPER_ADMIN"],
+  "organizations.manage": ["SUPER_ADMIN"],
+  "subscriptions.manage": ["SUPER_ADMIN"],
+  "plans.manage": ["SUPER_ADMIN"],
+  "users.global.manage": ["SUPER_ADMIN"],
+  "audit.global.view": ["SUPER_ADMIN"],
   "dashboard.view": APP_ALL_ROLES,
   "branches.view": ["SUPER_ADMIN", "ADMIN"],
   "branches.manage": ["SUPER_ADMIN", "ADMIN"],
@@ -45,6 +51,7 @@ export const PERMISSIONS = {
 export type Permission = keyof typeof PERMISSIONS;
 
 const PATH_PERMISSIONS: Array<{ prefix: string; permission: Permission }> = [
+  { prefix: "/admin", permission: "admin.panel" },
   { prefix: "/dashboard/branches", permission: "branches.view" },
   { prefix: "/dashboard/students", permission: "students.view" },
   { prefix: "/dashboard/leads", permission: "leads.view" },
@@ -65,6 +72,12 @@ const PATH_PERMISSIONS: Array<{ prefix: string; permission: Permission }> = [
 ];
 
 const API_PERMISSIONS: Array<{ prefix: string; permission: Permission }> = [
+  { prefix: "/api/admin/organizations", permission: "organizations.manage" },
+  { prefix: "/api/admin/subscriptions", permission: "subscriptions.manage" },
+  { prefix: "/api/admin/plans", permission: "plans.manage" },
+  { prefix: "/api/admin/users", permission: "users.global.manage" },
+  { prefix: "/api/admin/audit", permission: "audit.global.view" },
+  { prefix: "/api/admin/metrics", permission: "admin.panel" },
   { prefix: "/api/branches", permission: "branches.manage" },
   { prefix: "/api/students", permission: "students.manage" },
   { prefix: "/api/leads", permission: "leads.manage" },
