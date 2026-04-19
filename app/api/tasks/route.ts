@@ -89,6 +89,7 @@ export async function POST(request: NextRequest) {
 
   const task = await prisma.task.create({
     data: {
+      organizationId: auth.session.organizationId,
       title: parsed.data.title,
       description: parsed.data.description?.trim() || null,
       assignedToId: parsed.data.assignedToId,
@@ -102,6 +103,7 @@ export async function POST(request: NextRequest) {
 
   await prisma.notification.create({
     data: {
+      organizationId: auth.session.organizationId,
       userId: task.assignedToId,
       branchId: task.branchId,
       type: "TASK_DUE",

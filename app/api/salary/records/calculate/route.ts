@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
             },
           },
           create: {
+            organizationId: auth.session.organizationId,
             teacherId: teacher.id,
             branchId: result.teacher.branchId,
             periodMonth: parsed.data.periodMonth,
@@ -74,6 +75,7 @@ export async function POST(request: NextRequest) {
 
         await tx.auditLog.create({
           data: {
+            organizationId: auth.session.organizationId,
             action: "SALARY_CALCULATED",
             entityType: "SALARY_RECORD",
             entityId: record.id,

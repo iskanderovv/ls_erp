@@ -85,6 +85,7 @@ export async function POST(request: NextRequest) {
 
   const reminder = await prisma.paymentReminder.create({
     data: {
+      organizationId: auth.session.organizationId,
       studentId: student.id,
       groupId,
       branchId: student.branchId,

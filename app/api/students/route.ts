@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
 
   const student = await prisma.student.create({
     data: {
+      organizationId: auth.session.organizationId,
       firstName: parsed.data.firstName,
       lastName: parsed.data.lastName,
       phone: parsed.data.phone,

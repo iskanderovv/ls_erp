@@ -19,6 +19,17 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: "Filial ma'lumotlari noto'g'ri." }, { status: 400 });
   }
 
+  const existingBranch = await prisma.branch.findFirst({
+    where: {
+      id,
+      organizationId: auth.session.organizationId,
+    },
+    select: { id: true },
+  });
+  if (!existingBranch) {
+    return NextResponse.json({ error: "Filial topilmadi." }, { status: 404 });
+  }
+
   const branch = await prisma.branch.update({
     where: { id },
     data: parsed.data,
@@ -34,8 +45,11 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
   const { id } = await params;
 
   try {
-    const branch = await prisma.branch.findUnique({
-      where: { id },
+    const branch = await prisma.branch.findFirst({
+      where: {
+        id,
+        organizationId: auth.session.organizationId,
+      },
       include: {
         _count: {
           select: {
@@ -96,9 +110,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    await prisma.branch.delete({
-      where: { id },
-    });
+    await prisma.branch.delete({ where: { id } });
 
     return NextResponse.json({ success: true });
   } catch {

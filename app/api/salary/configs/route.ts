@@ -92,6 +92,7 @@ export async function POST(request: NextRequest) {
 
     await tx.auditLog.create({
       data: {
+        organizationId: auth.session.organizationId,
         action: "SALARY_CONFIG_CREATED",
         entityType: "TEACHER_SALARY_CONFIG",
         entityId: created.id,

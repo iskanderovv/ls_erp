@@ -85,6 +85,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 
     await tx.auditLog.create({
       data: {
+        organizationId: auth.session.organizationId,
         action: "SALARY_CONFIG_UPDATED",
         entityType: "TEACHER_SALARY_CONFIG",
         entityId: updated.id,

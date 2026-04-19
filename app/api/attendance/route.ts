@@ -101,6 +101,7 @@ export async function POST(request: NextRequest) {
           },
         },
         create: {
+          organizationId: auth.session.organizationId,
           studentId: entry.studentId,
           groupId: parsed.data.groupId,
           date: targetDate,

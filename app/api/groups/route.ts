@@ -22,6 +22,7 @@ export async function POST(request: NextRequest) {
 
   const group = await prisma.studyGroup.create({
     data: {
+      organizationId: auth.session.organizationId,
       name: parsed.data.name,
       subject: parsed.data.subject,
       teacherId: emptyToNull(parsed.data.teacherId),

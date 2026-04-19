@@ -67,6 +67,7 @@ export async function POST(request: NextRequest) {
 
   const fee = await prisma.studentFee.create({
     data: {
+      organizationId: auth.session.organizationId,
       studentId: student.id,
       groupId: group.id,
       branchId: student.branchId,

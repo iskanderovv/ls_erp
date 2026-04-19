@@ -69,6 +69,7 @@ export async function POST(request: NextRequest) {
   const expense = await prisma.$transaction(async (tx) => {
     const createdExpense = await tx.expense.create({
       data: {
+        organizationId: auth.session.organizationId,
         title: parsed.data.title,
         amountCents: toCents(parsed.data.amount),
         category: parsed.data.category,
@@ -81,6 +82,7 @@ export async function POST(request: NextRequest) {
 
     await tx.financialTransaction.create({
       data: {
+        organizationId: auth.session.organizationId,
         type: "EXPENSE",
         amountCents: createdExpense.amountCents,
         branchId: createdExpense.branchId,
@@ -93,6 +95,7 @@ export async function POST(request: NextRequest) {
 
     await tx.auditLog.create({
       data: {
+        organizationId: auth.session.organizationId,
         action: "EXPENSE_CREATED",
         entityType: "EXPENSE",
         entityId: createdExpense.id,

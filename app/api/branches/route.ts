@@ -15,7 +15,10 @@ export async function POST(request: NextRequest) {
   }
 
   const branch = await prisma.branch.create({
-    data: parsed.data,
+    data: {
+      ...parsed.data,
+      organizationId: auth.session.organizationId,
+    },
   });
 
   return NextResponse.json({ branch });

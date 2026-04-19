@@ -109,6 +109,7 @@ export async function POST(request: NextRequest) {
   const payment = await prisma.$transaction(async (tx) => {
     const createdPayment = await tx.payment.create({
       data: {
+        organizationId: auth.session.organizationId,
         studentId: student.id,
         groupId,
         branchId: student.branchId,
@@ -122,6 +123,7 @@ export async function POST(request: NextRequest) {
 
     await tx.financialTransaction.create({
       data: {
+        organizationId: auth.session.organizationId,
         type: "INCOME",
         amountCents: createdPayment.amountCents,
         branchId: createdPayment.branchId,
@@ -134,6 +136,7 @@ export async function POST(request: NextRequest) {
 
     await tx.auditLog.create({
       data: {
+        organizationId: auth.session.organizationId,
         action: "PAYMENT_CREATED",
         entityType: "PAYMENT",
         entityId: createdPayment.id,

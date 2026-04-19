@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { authorizeRequest } from "@/lib/auth/api";
+import { canAccessBranch } from "@/lib/auth/branch-scope";
 import { dateInputToDate, emptyToNull, splitSubjects } from "@/lib/normalizers";
 import { prisma } from "@/lib/prisma";
 import { teacherSchema } from "@/lib/validators/schemas";
@@ -14,9 +15,13 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Ustoz ma'lumotlari noto'g'ri." }, { status: 400 });
   }
+  if (!canAccessBranch(auth.session, parsed.data.branchId)) {
+    return NextResponse.json({ error: "Tanlangan filial uchun ruxsat yo'q." }, { status: 403 });
+  }
 
   const teacher = await prisma.teacher.create({
     data: {
+      organizationId: auth.session.organizationId,
       firstName: parsed.data.firstName,
       lastName: parsed.data.lastName,
       phone: parsed.data.phone,

@@ -19,8 +19,11 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Lid ma'lumotlari noto'g'ri." }, { status: 400 });
   }
-  const existingLead = await prisma.lead.findUnique({
-    where: { id },
+  const existingLead = await prisma.lead.findFirst({
+    where: {
+      id,
+      organizationId: auth.session.organizationId,
+    },
     select: { branchId: true },
   });
   if (!existingLead) {

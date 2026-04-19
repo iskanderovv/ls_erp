@@ -13,8 +13,11 @@ export async function POST(request: NextRequest, { params }: Params) {
 
   const { id } = await params;
 
-  const lead = await prisma.lead.findUnique({
-    where: { id },
+  const lead = await prisma.lead.findFirst({
+    where: {
+      id,
+      organizationId: auth.session.organizationId,
+    },
   });
   if (!lead) {
     return NextResponse.json({ error: "Lid topilmadi." }, { status: 404 });
@@ -30,6 +33,7 @@ export async function POST(request: NextRequest, { params }: Params) {
   const result = await prisma.$transaction(async (tx) => {
     const student = await tx.student.create({
       data: {
+        organizationId: lead.organizationId,
         firstName: lead.firstName,
         lastName: lead.lastName ?? "-",
         phone: lead.phone,

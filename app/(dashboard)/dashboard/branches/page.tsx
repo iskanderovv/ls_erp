@@ -3,7 +3,6 @@ import { Edit, Eye } from "lucide-react";
 
 import { DeleteBranchButton } from "@/components/branches/delete-branch-button";
 import { PageHeader } from "@/components/shared/page-header";
-import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Table, TableCell, TableHead } from "@/components/ui/table";
 import { branchStatusLabels } from "@/lib/constants";
@@ -72,18 +71,20 @@ export default async function BranchesPage() {
                   <TableCell>{formatDate(branch.createdAt)}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      <Button asChild variant="outline" size="sm" className="h-8 px-2 border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800">
-                        <Link href={`/dashboard/branches/${branch.id}`}>
-                          <Eye className="h-4 w-4" />
-                        </Link>
-                      </Button>
+                      <Link
+                        href={`/dashboard/branches/${branch.id}`}
+                        className="inline-flex h-8 items-center justify-center rounded-md border border-blue-200 bg-white px-2 text-blue-700 hover:bg-blue-50 hover:text-blue-800"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Link>
                       {canManage ? (
                         <>
-                          <Button asChild variant="outline" size="sm" className="h-8 px-2 border-amber-200 text-amber-700 hover:bg-amber-50 hover:text-amber-800">
-                            <Link href={`/dashboard/branches/${branch.id}/edit`}>
-                              <Edit className="h-4 w-4" />
-                            </Link>
-                          </Button>
+                          <Link
+                            href={`/dashboard/branches/${branch.id}/edit`}
+                            className="inline-flex h-8 items-center justify-center rounded-md border border-amber-200 bg-white px-2 text-amber-700 hover:bg-amber-50 hover:text-amber-800"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Link>
                           <DeleteBranchButton id={branch.id} />
                         </>
                       ) : null}

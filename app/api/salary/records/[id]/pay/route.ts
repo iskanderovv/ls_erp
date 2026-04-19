@@ -47,6 +47,7 @@ export async function POST(request: NextRequest, { params }: Params) {
   const result = await prisma.$transaction(async (tx) => {
     const payment = await tx.salaryPayment.create({
       data: {
+        organizationId: auth.session.organizationId,
         salaryRecordId: salaryRecord.id,
         teacherId: salaryRecord.teacherId,
         branchId: salaryRecord.branchId,
@@ -87,6 +88,7 @@ export async function POST(request: NextRequest, { params }: Params) {
 
     await tx.financialTransaction.create({
       data: {
+        organizationId: auth.session.organizationId,
         type: "SALARY",
         amountCents,
         branchId: salaryRecord.branchId,
@@ -99,6 +101,7 @@ export async function POST(request: NextRequest, { params }: Params) {
 
     await tx.auditLog.create({
       data: {
+        organizationId: auth.session.organizationId,
         action: "SALARY_PAID",
         entityType: "SALARY_PAYMENT",
         entityId: payment.id,

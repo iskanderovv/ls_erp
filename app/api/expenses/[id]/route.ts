@@ -61,6 +61,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 
     await tx.auditLog.create({
       data: {
+        organizationId: auth.session.organizationId,
         action: "EXPENSE_UPDATED",
         entityType: "EXPENSE",
         entityId: nextExpense.id,
@@ -107,6 +108,7 @@ export async function DELETE(request: NextRequest, { params }: Params) {
 
     await tx.auditLog.create({
       data: {
+        organizationId: auth.session.organizationId,
         action: "EXPENSE_VOIDED",
         entityType: "EXPENSE",
         entityId: id,
