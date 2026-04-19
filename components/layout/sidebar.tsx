@@ -7,15 +7,15 @@ import type { AppRole } from "@/lib/auth/roles";
 import { navGroupsForRole } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
-export function Sidebar({ role }: { role: AppRole }) {
+export function Sidebar({ role, organizationName }: { role: AppRole; organizationName: string }) {
   const pathname = usePathname();
   const groups = navGroupsForRole(role);
 
   return (
     <aside className="hidden w-64 border-r border-slate-200 bg-white p-4 lg:block overflow-y-auto h-full">
       <div className="mb-6 px-2">
-        <p className="text-lg font-semibold">EduMarkaz</p>
-        <p className="text-xs text-slate-500">Ichki boshqaruv tizimi</p>
+        <p className="text-lg font-semibold">{organizationName}</p>
+        <p className="text-xs text-slate-500">EduMarkaz</p>
       </div>
 
       <nav className="space-y-6">

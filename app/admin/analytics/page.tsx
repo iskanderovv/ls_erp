@@ -50,15 +50,15 @@ export default async function AdminAnalyticsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Usage analytics</h1>
+        <h1 className="text-2xl font-semibold">Foydalanish analitikasi</h1>
         <p className="mt-1 text-sm text-slate-500">
-          Customer activity va growth ko&apos;rsatkichlari (students, groups, actions, revenue).
+          Mijozlar faolligi va o&apos;sish ko&apos;rsatkichlari (talabalar, guruhlar, amallar, tushum).
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Revenue trend (org-level, approximate)</CardTitle>
+          <CardTitle>Tushum trendi (tashkilot kesimida, taxminiy)</CardTitle>
         </CardHeader>
         <CardContent>
           <RevenueChart data={chartData} />
@@ -67,19 +67,19 @@ export default async function AdminAnalyticsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Organization usage table</CardTitle>
+          <CardTitle>Tashkilotlar bo&apos;yicha foydalanish jadvali</CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
           <div className="overflow-x-auto rounded-lg border border-slate-200">
             <Table>
               <thead>
                 <tr>
-                  <TableHead>Organization</TableHead>
-                  <TableHead>Students</TableHead>
-                  <TableHead>Groups</TableHead>
-                  <TableHead>Users</TableHead>
-                  <TableHead>Activity level</TableHead>
-                  <TableHead>Revenue</TableHead>
+                  <TableHead>Tashkilot</TableHead>
+                  <TableHead>Talabalar</TableHead>
+                  <TableHead>Guruhlar</TableHead>
+                  <TableHead>Foydalanuvchilar</TableHead>
+                  <TableHead>Faollik darajasi</TableHead>
+                  <TableHead>Tushum</TableHead>
                 </tr>
               </thead>
               <tbody>

@@ -55,8 +55,8 @@ export default async function AdminOrganizationsPage({ searchParams }: { searchP
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Organization management</h1>
-        <p className="mt-1 text-sm text-slate-500">Barcha customer organizationlarni boshqarish paneli.</p>
+        <h1 className="text-2xl font-semibold">Tashkilotlar boshqaruvi</h1>
+        <p className="mt-1 text-sm text-slate-500">Barcha mijoz tashkilotlarini boshqarish paneli.</p>
       </div>
 
       <Card>
@@ -65,12 +65,12 @@ export default async function AdminOrganizationsPage({ searchParams }: { searchP
         </CardHeader>
         <CardContent>
           <form className="grid gap-3 md:grid-cols-3">
-            <Input name="search" defaultValue={search} placeholder="Org nomi yoki ID" />
+            <Input name="search" defaultValue={search} placeholder="Tashkilot nomi yoki ID" />
             <Select name="status" defaultValue={status}>
               <option value="">Barcha statuslar</option>
-              <option value="ACTIVE">ACTIVE</option>
-              <option value="BLOCKED">BLOCKED</option>
-              <option value="INACTIVE">INACTIVE</option>
+              <option value="ACTIVE">Faol</option>
+              <option value="BLOCKED">Bloklangan</option>
+              <option value="INACTIVE">Nofaol</option>
             </Select>
             <button className="h-10 rounded-md bg-slate-900 px-4 text-sm font-medium text-white" type="submit">
               Qo&apos;llash
@@ -90,12 +90,12 @@ export default async function AdminOrganizationsPage({ searchParams }: { searchP
                 <thead>
                   <tr>
                     <TableHead>Nomi</TableHead>
-                    <TableHead>Owner</TableHead>
-                    <TableHead>Plan</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Students</TableHead>
-                    <TableHead>Active groups</TableHead>
-                    <TableHead>Sub status</TableHead>
+                    <TableHead>Mas&apos;ul</TableHead>
+                    <TableHead>Tarif</TableHead>
+                    <TableHead>Holat</TableHead>
+                    <TableHead>Talabalar</TableHead>
+                    <TableHead>Faol guruhlar</TableHead>
+                    <TableHead>Obuna holati</TableHead>
                     <TableHead>Yaratilgan</TableHead>
                     <TableHead />
                   </tr>

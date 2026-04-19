@@ -33,22 +33,22 @@ export default async function AdminSubscriptionsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Subscription management</h1>
+        <h1 className="text-2xl font-semibold">Obunalar boshqaruvi</h1>
         <p className="mt-1 text-sm text-slate-500">
-          Plan o&apos;zgartirish, trial/active/expired holatini qo&apos;lda boshqarish.
+          Tarifni o&apos;zgartirish, sinov/faol/muddati tugagan holatlarini qo&apos;lda boshqarish.
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardContent className="pt-5">
-            <p className="text-xs text-slate-500">Jami subscriptions</p>
+            <p className="text-xs text-slate-500">Jami obunalar</p>
             <p className="mt-1 text-2xl font-semibold">{subscriptions.length}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-5">
-            <p className="text-xs text-slate-500">Active subscriptions</p>
+            <p className="text-xs text-slate-500">Faol obunalar</p>
             <p className="mt-1 text-2xl font-semibold">
               {subscriptions.filter((item) => item.status === SubscriptionStatus.ACTIVE).length}
             </p>
@@ -56,7 +56,7 @@ export default async function AdminSubscriptionsPage() {
         </Card>
         <Card>
           <CardContent className="pt-5">
-            <p className="text-xs text-slate-500">Estimated revenue</p>
+            <p className="text-xs text-slate-500">Taxminiy tushum</p>
             <p className="mt-1 text-2xl font-semibold">{formatCurrencyFromCents(totalRevenueCents)}</p>
           </CardContent>
         </Card>
@@ -71,12 +71,12 @@ export default async function AdminSubscriptionsPage() {
             <Table>
               <thead>
                 <tr>
-                  <TableHead>Organization</TableHead>
-                  <TableHead>Plan</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Start</TableHead>
-                  <TableHead>End</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>Tashkilot</TableHead>
+                  <TableHead>Tarif</TableHead>
+                  <TableHead>Holat</TableHead>
+                  <TableHead>Boshlanish</TableHead>
+                  <TableHead>Tugash</TableHead>
+                  <TableHead>Amallar</TableHead>
                 </tr>
               </thead>
               <tbody>

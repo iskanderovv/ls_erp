@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SubscriptionStatus } from "@prisma/client";
+import bcrypt from "bcryptjs";
+import { Role, SubscriptionStatus, UserStatus } from "@prisma/client";
 
 import { logSuperAdminAction } from "@/lib/admin/audit";
 import { authorizeRequest } from "@/lib/auth/api";
@@ -73,37 +74,73 @@ export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
   const parsed = organizationCreateSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Organization ma'lumotlari noto'g'ri." }, { status: 400 });
+    return NextResponse.json({ error: "Tashkilot ma'lumotlari noto'g'ri." }, { status: 400 });
   }
 
-  const plan = await prisma.plan.findUnique({
-    where: { code: parsed.data.subscriptionPlan },
+  const existingUser = await prisma.user.findUnique({
+    where: { phone: parsed.data.ownerPhone },
+    select: { id: true },
   });
-  if (!plan) {
-    return NextResponse.json({ error: "Tanlangan plan topilmadi." }, { status: 400 });
+  if (existingUser) {
+    return NextResponse.json({ error: "Bu telefon raqami allaqachon ro'yxatdan o'tgan." }, { status: 400 });
   }
+
+  const passwordHash = await bcrypt.hash(parsed.data.ownerPassword, 12);
 
   const organization = await prisma.organization.create({
     data: {
       name: parsed.data.name,
       subscriptionPlan: parsed.data.subscriptionPlan,
       subscriptionStatus: SubscriptionStatus.ACTIVE,
-      subscriptions: {
-        create: {
+    },
+  });
+
+  const ownerUser = await prisma.user.create({
+    data: {
+      organizationId: organization.id,
+      firstName: parsed.data.name,
+      lastName: "Admin",
+      phone: parsed.data.ownerPhone,
+      passwordHash,
+      role: Role.ADMIN,
+      status: UserStatus.ACTIVE,
+    },
+  });
+
+  await prisma.organization.update({
+    where: { id: organization.id },
+    data: { ownerId: ownerUser.id },
+  });
+
+  const prismaCompat = prisma as typeof prisma & {
+    plan?: { findUnique: (args: { where: { code: "BASIC" | "PRO" | "ENTERPRISE" } }) => Promise<{ id: string } | null> };
+    subscription?: {
+      create: (args: {
+        data: {
+          organizationId: string;
+          planId: string;
+          status: SubscriptionStatus;
+          startDate: Date;
+        };
+      }) => Promise<unknown>;
+    };
+  };
+
+  if (prismaCompat.plan && prismaCompat.subscription) {
+    const plan = await prismaCompat.plan.findUnique({
+      where: { code: parsed.data.subscriptionPlan },
+    });
+    if (plan) {
+      await prismaCompat.subscription.create({
+        data: {
+          organizationId: organization.id,
           planId: plan.id,
           status: SubscriptionStatus.ACTIVE,
           startDate: new Date(),
         },
-      },
-    },
-    include: {
-      subscriptions: {
-        include: { plan: true },
-        orderBy: { createdAt: "desc" },
-        take: 1,
-      },
-    },
-  });
+      });
+    }
+  }
 
   await logSuperAdminAction({
     action: "ORGANIZATION_CREATED",
@@ -113,8 +150,10 @@ export async function POST(request: NextRequest) {
     payload: {
       name: organization.name,
       subscriptionPlan: organization.subscriptionPlan,
+      ownerUserId: ownerUser.id,
+      ownerPhone: ownerUser.phone,
     },
   });
 
-  return NextResponse.json({ organization }, { status: 201 });
+  return NextResponse.json({ organization, ownerUser }, { status: 201 });
 }

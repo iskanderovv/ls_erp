@@ -21,15 +21,15 @@ export default async function AdminAuditPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Global audit logs</h1>
+        <h1 className="text-2xl font-semibold">Global audit jurnali</h1>
         <p className="mt-1 text-sm text-slate-500">
-          Super admin darajasidagi organization, plan va subscription amallari jurnali.
+          Super admin darajasidagi tashkilot, tarif va obuna amallari jurnali.
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Audit trail</CardTitle>
+          <CardTitle>Audit tarixi</CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
           <div className="overflow-x-auto rounded-lg border border-slate-200">
@@ -37,10 +37,10 @@ export default async function AdminAuditPage() {
               <thead>
                 <tr>
                   <TableHead>Vaqt</TableHead>
-                  <TableHead>Action</TableHead>
-                  <TableHead>Entity</TableHead>
-                  <TableHead>Entity ID</TableHead>
-                  <TableHead>By</TableHead>
+                  <TableHead>Amal</TableHead>
+                  <TableHead>Obyekt</TableHead>
+                  <TableHead>Obyekt ID</TableHead>
+                  <TableHead>Kim tomonidan</TableHead>
                 </tr>
               </thead>
               <tbody>

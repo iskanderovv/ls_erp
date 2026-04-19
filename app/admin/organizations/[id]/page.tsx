@@ -63,12 +63,12 @@ export default async function AdminOrganizationDetailsPage({ params }: Params) {
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Link className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm hover:bg-slate-50" href="/admin/organizations">
-          ← Organizationlar
+          ← Tashkilotlar
         </Link>
         <div>
           <h1 className="text-2xl font-semibold">{organization.name}</h1>
           <p className="mt-1 text-sm text-slate-500">
-            Status: {organizationStatusLabels[organization.status as keyof typeof organizationStatusLabels]}
+            Holat: {organizationStatusLabels[organization.status as keyof typeof organizationStatusLabels]}
           </p>
         </div>
       </div>
@@ -76,7 +76,7 @@ export default async function AdminOrganizationDetailsPage({ params }: Params) {
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-1">
           <CardHeader>
-            <CardTitle>Organization control</CardTitle>
+            <CardTitle>Tashkilot boshqaruvi</CardTitle>
           </CardHeader>
           <CardContent>
             <OrganizationControlForm
@@ -99,19 +99,19 @@ export default async function AdminOrganizationDetailsPage({ params }: Params) {
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-4">
             <div className="rounded-lg bg-blue-50 p-3">
-              <p className="text-xs text-blue-700">Users</p>
+              <p className="text-xs text-blue-700">Foydalanuvchilar</p>
               <p className="text-xl font-semibold">{organization._count.users}</p>
             </div>
             <div className="rounded-lg bg-green-50 p-3">
-              <p className="text-xs text-green-700">Students</p>
+              <p className="text-xs text-green-700">Talabalar</p>
               <p className="text-xl font-semibold">{organization._count.students}</p>
             </div>
             <div className="rounded-lg bg-purple-50 p-3">
-              <p className="text-xs text-purple-700">Groups</p>
+              <p className="text-xs text-purple-700">Guruhlar</p>
               <p className="text-xl font-semibold">{organization._count.groups}</p>
             </div>
             <div className="rounded-lg bg-amber-50 p-3">
-              <p className="text-xs text-amber-700">Branches</p>
+              <p className="text-xs text-amber-700">Filiallar</p>
               <p className="text-xl font-semibold">{organization._count.branches}</p>
             </div>
           </CardContent>
@@ -120,18 +120,18 @@ export default async function AdminOrganizationDetailsPage({ params }: Params) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Subscription history</CardTitle>
+          <CardTitle>Obuna tarixi</CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
           <div className="overflow-x-auto rounded-lg border border-slate-200">
             <Table>
               <thead>
                 <tr>
-                  <TableHead>Plan</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Start</TableHead>
-                  <TableHead>End</TableHead>
-                  <TableHead>Created</TableHead>
+                  <TableHead>Tarif</TableHead>
+                  <TableHead>Holat</TableHead>
+                  <TableHead>Boshlanish</TableHead>
+                  <TableHead>Tugash</TableHead>
+                  <TableHead>Yaratilgan</TableHead>
                 </tr>
               </thead>
               <tbody>

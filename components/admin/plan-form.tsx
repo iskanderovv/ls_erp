@@ -48,10 +48,10 @@ export function PlanForm() {
   return (
     <form className="space-y-3" onSubmit={onSubmit}>
       <FormField label="Plan nomi" error={form.formState.errors.name?.message}>
-        <Input {...form.register("name")} placeholder="Pro Plan" />
+        <Input {...form.register("name")} placeholder="Pro tarifi" />
       </FormField>
       <div className="grid gap-3 md:grid-cols-3">
-        <FormField label="Code" error={form.formState.errors.code?.message}>
+        <FormField label="Kod" error={form.formState.errors.code?.message}>
           <Select {...form.register("code")}>
             <option value="BASIC">BASIC</option>
             <option value="PRO">PRO</option>
@@ -61,15 +61,15 @@ export function PlanForm() {
         <FormField label="Narx (oylik)" error={form.formState.errors.price?.message}>
           <Input type="number" min={0} step={0.01} {...form.register("price")} />
         </FormField>
-        <FormField label="Max students">
+        <FormField label="Talabalar limiti">
           <Input type="number" min={1} {...form.register("maxStudents")} />
         </FormField>
       </div>
       <div className="grid gap-3 md:grid-cols-2">
-        <FormField label="Max branches">
+        <FormField label="Filiallar limiti">
           <Input type="number" min={1} {...form.register("maxBranches")} />
         </FormField>
-        <FormField label="Feature flags JSON">
+        <FormField label="Funksiya bayroqlari JSON">
           <Input placeholder='{"ANALYTICS": true}' {...form.register("featureFlags")} />
         </FormField>
       </div>

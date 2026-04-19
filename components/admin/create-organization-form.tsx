@@ -20,6 +20,8 @@ export function CreateOrganizationForm() {
     resolver: zodResolver(organizationCreateSchema),
     defaultValues: {
       name: "",
+      ownerPhone: "+998",
+      ownerPassword: "",
       subscriptionPlan: "PRO",
     },
   });
@@ -31,7 +33,12 @@ export function CreateOrganizationForm() {
         method: "POST",
         body: JSON.stringify(values),
       });
-      form.reset({ name: "", subscriptionPlan: values.subscriptionPlan });
+      form.reset({
+        name: "",
+        ownerPhone: "+998",
+        ownerPassword: "",
+        subscriptionPlan: values.subscriptionPlan,
+      });
       router.refresh();
     } catch (error) {
       if (error instanceof ApiError) {
@@ -45,18 +52,24 @@ export function CreateOrganizationForm() {
   return (
     <form className="space-y-4" onSubmit={onSubmit}>
       <FormField label="Tashkilot nomi" error={form.formState.errors.name?.message}>
-        <Input placeholder="Masalan: New Academy" {...form.register("name")} />
+        <Input placeholder="Masalan: Yangi Akademiya" {...form.register("name")} />
+      </FormField>
+      <FormField label="Login uchun telefon" error={form.formState.errors.ownerPhone?.message}>
+        <Input placeholder="+99890..." {...form.register("ownerPhone")} />
+      </FormField>
+      <FormField label="Login uchun parol" error={form.formState.errors.ownerPassword?.message}>
+        <Input type="password" {...form.register("ownerPassword")} />
       </FormField>
       <FormField label="Tarif" error={form.formState.errors.subscriptionPlan?.message}>
         <Select {...form.register("subscriptionPlan")}>
-          <option value="BASIC">Basic</option>
-          <option value="PRO">Pro</option>
-          <option value="ENTERPRISE">Enterprise</option>
+          <option value="BASIC">BASIC (Asosiy)</option>
+          <option value="PRO">PRO</option>
+          <option value="ENTERPRISE">ENTERPRISE (Korporativ)</option>
         </Select>
       </FormField>
       {submitError ? <p className="text-sm text-red-600">{submitError}</p> : null}
       <Button type="submit" disabled={form.formState.isSubmitting}>
-        {form.formState.isSubmitting ? "Yaratilmoqda..." : "Organization qo'shish"}
+        {form.formState.isSubmitting ? "Yaratilmoqda..." : "Tashkilot qo'shish"}
       </Button>
     </form>
   );

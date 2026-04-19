@@ -41,6 +41,8 @@ export const branchSchema = z.object({
 
 export const organizationCreateSchema = z.object({
   name: z.string().trim().min(2, "Tashkilot nomi kamida 2 ta belgi bo'lishi kerak."),
+  ownerPhone: phoneSchema,
+  ownerPassword: z.string().min(6, "Parol kamida 6 ta belgidan iborat bo'lishi kerak."),
   subscriptionPlan: z.enum(["BASIC", "PRO", "ENTERPRISE"]),
 });
 

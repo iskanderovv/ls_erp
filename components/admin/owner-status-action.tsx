@@ -33,7 +33,7 @@ export function OwnerStatusAction({
 
   return (
     <Button variant={currentStatus === "ACTIVE" ? "destructive" : "outline"} size="sm" onClick={handleClick} disabled={loading}>
-      {loading ? "..." : currentStatus === "ACTIVE" ? "Block" : "Unblock"}
+      {loading ? "..." : currentStatus === "ACTIVE" ? "Bloklash" : "Blokdan chiqarish"}
     </Button>
   );
 }

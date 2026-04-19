@@ -49,39 +49,39 @@ export function OrganizationControlForm({ organization, owners }: OrganizationCo
         }),
       });
       router.refresh();
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setError(error.message);
-      } else {
-        setError("Organization sozlamalarini saqlashda xatolik.");
+      } catch (error) {
+        if (error instanceof ApiError) {
+          setError(error.message);
+        } else {
+          setError("Tashkilot sozlamalarini saqlashda xatolik.");
+        }
+      } finally {
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (
     <div className="space-y-4">
-      <FormField label="Status">
+      <FormField label="Holat">
         <Select value={status} onChange={(event) => setStatus(event.target.value as typeof status)}>
-          <option value="ACTIVE">ACTIVE</option>
-          <option value="BLOCKED">BLOCKED</option>
-          <option value="INACTIVE">INACTIVE</option>
+          <option value="ACTIVE">Faol</option>
+          <option value="BLOCKED">Bloklangan</option>
+          <option value="INACTIVE">Nofaol</option>
         </Select>
       </FormField>
 
-      <FormField label="Plan">
+      <FormField label="Tarif">
         <Select
           value={subscriptionPlan}
           onChange={(event) => setSubscriptionPlan(event.target.value as typeof subscriptionPlan)}
         >
-          <option value="BASIC">BASIC</option>
+          <option value="BASIC">BASIC (Asosiy)</option>
           <option value="PRO">PRO</option>
-          <option value="ENTERPRISE">ENTERPRISE</option>
+          <option value="ENTERPRISE">ENTERPRISE (Korporativ)</option>
         </Select>
       </FormField>
 
-      <FormField label="Owner user">
+      <FormField label="Mas'ul foydalanuvchi">
         <Select value={ownerId} onChange={(event) => setOwnerId(event.target.value)}>
           <option value="">Tanlanmagan</option>
           {owners.map((owner) => (
@@ -93,7 +93,7 @@ export function OrganizationControlForm({ organization, owners }: OrganizationCo
       </FormField>
 
       {status === "BLOCKED" ? (
-        <FormField label="Block reason">
+        <FormField label="Blok sababi">
           <Input value={blockReason} onChange={(event) => setBlockReason(event.target.value)} />
         </FormField>
       ) : null}

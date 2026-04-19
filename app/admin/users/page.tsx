@@ -25,13 +25,13 @@ export default async function AdminUsersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Global user management</h1>
-        <p className="mt-1 text-sm text-slate-500">Asosiy userlar (owner/admin/manager) holatini nazorat qilish.</p>
+        <h1 className="text-2xl font-semibold">Global foydalanuvchilar boshqaruvi</h1>
+        <p className="mt-1 text-sm text-slate-500">Asosiy foydalanuvchilar (egasi/admin/menejer) holatini nazorat qilish.</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Key users</CardTitle>
+          <CardTitle>Asosiy foydalanuvchilar</CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
           <div className="overflow-x-auto rounded-lg border border-slate-200">
@@ -40,11 +40,11 @@ export default async function AdminUsersPage() {
                 <tr>
                   <TableHead>F.I.O</TableHead>
                   <TableHead>Telefon</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Organization</TableHead>
+                  <TableHead>Rol</TableHead>
+                  <TableHead>Tashkilot</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead>Action</TableHead>
+                  <TableHead>Yaratilgan</TableHead>
+                  <TableHead>Amal</TableHead>
                 </tr>
               </thead>
               <tbody>

@@ -93,9 +93,9 @@ export default async function AdminPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold">Founder dashboard</h1>
+          <h1 className="text-2xl font-semibold">Asoschi boshqaruv paneli</h1>
           <p className="mt-1 text-sm text-slate-500">
-            Platform miqyosida organization, subscription, revenue va growth nazorati.
+            Platforma bo&apos;yicha tashkilotlar, obunalar, tushum va o&apos;sish nazorati.
           </p>
         </div>
       </div>
@@ -103,19 +103,19 @@ export default async function AdminPage() {
       <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
         <Card>
           <CardContent className="pt-5">
-            <p className="text-xs text-slate-500">Organizations</p>
+            <p className="text-xs text-slate-500">Tashkilotlar</p>
             <p className="mt-1 text-2xl font-semibold">{totalOrganizations}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-5">
-            <p className="text-xs text-slate-500">Active subs</p>
+            <p className="text-xs text-slate-500">Faol obunalar</p>
             <p className="mt-1 text-2xl font-semibold">{activeSubscriptions}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-5">
-            <p className="text-xs text-slate-500">Trial subs</p>
+            <p className="text-xs text-slate-500">Sinov obunalari</p>
             <p className="mt-1 text-2xl font-semibold">{trialSubscriptions}</p>
           </CardContent>
         </Card>
@@ -127,13 +127,13 @@ export default async function AdminPage() {
         </Card>
         <Card>
           <CardContent className="pt-5">
-            <p className="text-xs text-slate-500">New orgs (30d)</p>
+            <p className="text-xs text-slate-500">Yangi tashkilotlar (30 kun)</p>
             <p className="mt-1 text-2xl font-semibold">{newOrganizations}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-5">
-            <p className="text-xs text-slate-500">Churn</p>
+            <p className="text-xs text-slate-500">Chiqib ketish</p>
             <p className="mt-1 text-2xl font-semibold">{churnRate.toFixed(1)}%</p>
           </CardContent>
         </Card>
@@ -142,7 +142,7 @@ export default async function AdminPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Revenue by plan</CardTitle>
+            <CardTitle>Tarif bo&apos;yicha tushum</CardTitle>
           </CardHeader>
           <CardContent>
             <RevenueChart data={revenueByPlan} />
@@ -151,23 +151,23 @@ export default async function AdminPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Quick actions</CardTitle>
+            <CardTitle>Tezkor amallar</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <Link className="block rounded-md border border-slate-200 p-3 text-sm hover:bg-slate-50" href="/admin/organizations">
-              Organization management
+              Tashkilotlar boshqaruvi
             </Link>
             <Link className="block rounded-md border border-slate-200 p-3 text-sm hover:bg-slate-50" href="/admin/subscriptions">
-              Subscription control
+              Obunalar boshqaruvi
             </Link>
             <Link className="block rounded-md border border-slate-200 p-3 text-sm hover:bg-slate-50" href="/admin/plans">
-              Plan management
+              Tariflar boshqaruvi
             </Link>
             <Link className="block rounded-md border border-slate-200 p-3 text-sm hover:bg-slate-50" href="/admin/analytics">
-              Usage analytics
+              Foydalanish analitikasi
             </Link>
             <Link className="block rounded-md border border-slate-200 p-3 text-sm hover:bg-slate-50" href="/admin/audit">
-              Global audit logs
+              Global audit jurnali
             </Link>
           </CardContent>
         </Card>

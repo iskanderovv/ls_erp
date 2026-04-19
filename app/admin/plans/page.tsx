@@ -18,7 +18,7 @@ export default async function AdminPlansPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Plan management</h1>
+        <h1 className="text-2xl font-semibold">Tariflar boshqaruvi</h1>
         <p className="mt-1 text-sm text-slate-500">
           Tariflarni yaratish yoki tahrirlash, limitlarni va feature flaglarni belgilash.
         </p>
@@ -27,7 +27,7 @@ export default async function AdminPlansPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-1">
           <CardHeader>
-            <CardTitle>Plan create / update</CardTitle>
+            <CardTitle>Tarif yaratish / yangilash</CardTitle>
           </CardHeader>
           <CardContent>
             <PlanForm />
@@ -43,14 +43,14 @@ export default async function AdminPlansPage() {
               <Table>
                 <thead>
                   <tr>
-                    <TableHead>Code</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Max students</TableHead>
-                    <TableHead>Max branches</TableHead>
-                    <TableHead>Active</TableHead>
-                    <TableHead>Subscriptions</TableHead>
-                    <TableHead>Created</TableHead>
+                    <TableHead>Kod</TableHead>
+                    <TableHead>Nomi</TableHead>
+                    <TableHead>Narx</TableHead>
+                    <TableHead>Talabalar limiti</TableHead>
+                    <TableHead>Filiallar limiti</TableHead>
+                    <TableHead>Faol</TableHead>
+                    <TableHead>Obunalar</TableHead>
+                    <TableHead>Yaratilgan</TableHead>
                   </tr>
                 </thead>
                 <tbody>
@@ -61,7 +61,7 @@ export default async function AdminPlansPage() {
                       <TableCell>{formatCurrencyFromCents(plan.priceCents)}</TableCell>
                       <TableCell>{plan.maxStudents ?? "-"}</TableCell>
                       <TableCell>{plan.maxBranches ?? "-"}</TableCell>
-                      <TableCell>{plan.isActive ? "Yes" : "No"}</TableCell>
+                      <TableCell>{plan.isActive ? "Ha" : "Yo&apos;q"}</TableCell>
                       <TableCell>{plan._count.subscriptions}</TableCell>
                       <TableCell>{formatDate(plan.createdAt)}</TableCell>
                     </tr>

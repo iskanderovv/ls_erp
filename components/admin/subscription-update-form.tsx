@@ -41,9 +41,9 @@ export function SubscriptionUpdateForm({
   return (
     <div className="flex items-center gap-2">
       <Select value={status} onChange={(event) => setStatus(event.target.value as typeof status)} className="h-8 text-xs">
-        <option value="TRIAL">TRIAL</option>
-        <option value="ACTIVE">ACTIVE</option>
-        <option value="EXPIRED">EXPIRED</option>
+        <option value="TRIAL">Sinov</option>
+        <option value="ACTIVE">Faol</option>
+        <option value="EXPIRED">Muddati tugagan</option>
       </Select>
       <Select value={planId} onChange={(event) => setPlanId(event.target.value)} className="h-8 text-xs">
         {planOptions.map((plan) => (
@@ -53,7 +53,7 @@ export function SubscriptionUpdateForm({
         ))}
       </Select>
       <Button size="sm" onClick={handleSave} disabled={loading}>
-        {loading ? "..." : "Save"}
+        {loading ? "..." : "Saqlash"}
       </Button>
     </div>
   );
