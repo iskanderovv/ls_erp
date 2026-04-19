@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { AnalyticsCharts } from "@/components/dashboard/analytics-charts";
+import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton";
 import { SmartInsights } from "@/components/dashboard/smart-insights";
 import { SmartOperations } from "@/components/dashboard/smart-operations";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -56,7 +57,7 @@ export function DashboardOverview() {
   });
 
   if (query.isLoading) {
-    return <div className="text-sm text-slate-500">Yuklanmoqda...</div>;
+    return <DashboardSkeleton />;
   }
 
   if (query.isError || !query.data) {

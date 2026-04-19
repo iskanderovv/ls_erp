@@ -24,17 +24,19 @@ export function Sidebar({ role }: { role: AppRole }) {
             item.href === "/dashboard"
               ? pathname === "/dashboard"
               : pathname === item.href || pathname.startsWith(`${item.href}/`);
+          const Icon = item.icon;
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "block rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                 active
                   ? "bg-slate-900 !text-white hover:bg-slate-800 hover:!text-white"
                   : "text-slate-700 hover:bg-slate-100",
               )}
             >
+              <Icon className="h-4 w-4" />
               {item.label}
             </Link>
           );
