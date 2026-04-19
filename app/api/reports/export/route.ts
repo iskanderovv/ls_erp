@@ -75,9 +75,7 @@ export async function GET(request: NextRequest) {
       ...payments.map((p) =>
         [
           p.paidAt.toISOString().split("T")[0],
-          // @ts-expect-error Prisma relation types
           `${p.student?.firstName} ${p.student?.lastName}`,
-          // @ts-expect-error Prisma relation types
           p.group?.name ?? "-",
           (p.amountCents / 100).toFixed(2),
           p.paymentMethod,

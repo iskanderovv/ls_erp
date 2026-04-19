@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 
 type NotificationPayload = {
   userId: string;
+  organizationId?: string;
   branchId?: string | null;
   type: NotificationType;
   severity?: NotificationSeverity;
@@ -13,6 +14,14 @@ type NotificationPayload = {
 };
 
 export async function createNotification(payload: NotificationPayload) {
+  const user = await prisma.user.findUnique({
+    where: { id: payload.userId },
+    select: { organizationId: true },
+  });
+  if (!user) {
+    throw new Error("Foydalanuvchi topilmadi.");
+  }
+
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
   const existing = await prisma.notification.findFirst({
     where: {
@@ -30,6 +39,7 @@ export async function createNotification(payload: NotificationPayload) {
 
   return prisma.notification.create({
     data: {
+      organizationId: payload.organizationId ?? user.organizationId,
       userId: payload.userId,
       branchId: payload.branchId ?? null,
       type: payload.type,

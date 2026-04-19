@@ -6,7 +6,9 @@ type FeeWithPayments = StudentFee & {
   payments?: Payment[];
 };
 
-export function feeExpectedAmount(fee: StudentFee, now = new Date()) {
+type FeeAmountBase = Pick<StudentFee, "startDate" | "endDate" | "monthlyFeeCents">;
+
+export function feeExpectedAmount(fee: FeeAmountBase, now = new Date()) {
   const feeStart = startOfMonth(fee.startDate);
   const feeEnd = fee.endDate ? startOfMonth(fee.endDate) : startOfMonth(now);
   const months = Math.max(0, monthCountInRange(feeStart, feeEnd));

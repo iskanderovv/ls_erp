@@ -62,7 +62,6 @@ export async function GET(request: NextRequest) {
 
   const leadDistribution = Object.values(LeadStatus).map((status) => {
     const stat = leadStats.find((s) => s.status === status);
-    // @ts-expect-error Prisma aggregation types can be tricky
     return { name: statusTranslations[status], value: stat?._count?._all ?? 0 };
   });
 

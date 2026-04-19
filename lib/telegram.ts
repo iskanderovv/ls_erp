@@ -19,6 +19,7 @@ export async function sendStudentTelegram(input: SendStudentTelegramInput) {
     where: { id: input.studentId },
     select: {
       id: true,
+      organizationId: true,
       firstName: true,
       branchId: true,
       telegramChatId: true,
@@ -40,6 +41,7 @@ export async function sendStudentTelegram(input: SendStudentTelegramInput) {
   if (!target.optIn || !target.chatId) {
     const skipped = await prisma.telegramMessage.create({
       data: {
+        organizationId: student.organizationId,
         studentId: student.id,
         branchId: student.branchId,
         createdById: input.createdById ?? null,
@@ -64,6 +66,7 @@ export async function sendStudentTelegram(input: SendStudentTelegramInput) {
     await sendTelegramMessage(target.chatId, message);
     const sent = await prisma.telegramMessage.create({
       data: {
+        organizationId: student.organizationId,
         studentId: student.id,
         branchId: student.branchId,
         createdById: input.createdById ?? null,
@@ -78,6 +81,7 @@ export async function sendStudentTelegram(input: SendStudentTelegramInput) {
   } catch (error) {
     const failed = await prisma.telegramMessage.create({
       data: {
+        organizationId: student.organizationId,
         studentId: student.id,
         branchId: student.branchId,
         createdById: input.createdById ?? null,

@@ -39,6 +39,10 @@ export async function GET(request: NextRequest) {
     take: 600,
   });
 
-  const scopedRows = rows.filter((row) => canAccessBranch(auth.session, row.branchId));
+  const scopedRows = rows.filter((row) =>
+    row.branchId
+      ? canAccessBranch(auth.session, row.branchId)
+      : auth.session.role === "SUPER_ADMIN" || auth.session.role === "ADMIN",
+  );
   return NextResponse.json({ rows: scopedRows });
 }

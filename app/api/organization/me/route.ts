@@ -7,12 +7,10 @@ export async function GET(request: NextRequest) {
   const auth = await authorizeRequest(request);
   if (!auth.ok) return auth.response;
 
-  // @ts-expect-error prisma.organization might be temporarily undefined until generate succeeds
   if (!prisma.organization) {
     return NextResponse.json({ error: "Prisma client hali yangilanmagan." }, { status: 503 });
   }
 
-  // @ts-expect-error Prisma organization property
   const organization = await prisma.organization.findUnique({
     where: { id: auth.session.organizationId },
     select: {

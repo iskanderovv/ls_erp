@@ -24,6 +24,7 @@ export async function handleLeadCreated(leadId: string) {
     where: { id: leadId },
     select: {
       id: true,
+      organizationId: true,
       firstName: true,
       status: true,
       branchId: true,
@@ -59,10 +60,11 @@ export async function handleLeadCreated(leadId: string) {
       severity: NotificationSeverity.INFO,
     });
 
-    await ensureTask({
-      title: `${lead.firstName} bilan bog'lanish`,
-      description: "Yangi lid uchun tezkor follow-up qiling.",
-      assignedToId,
+      await ensureTask({
+        organizationId: lead.organizationId,
+        title: `${lead.firstName} bilan bog'lanish`,
+        description: "Yangi lid uchun tezkor follow-up qiling.",
+        assignedToId,
       branchId: lead.branchId,
       relatedEntityType: TaskEntityType.LEAD,
       relatedEntityId: lead.id,
@@ -82,7 +84,7 @@ export async function handleAttendanceAutomation(
 
   const group = await prisma.studyGroup.findUnique({
     where: { id: groupId },
-    select: { id: true, name: true, branchId: true },
+    select: { id: true, name: true, branchId: true, organizationId: true },
   });
   if (!group) return { alerts: 0 };
 
@@ -118,6 +120,7 @@ export async function handleAttendanceAutomation(
     const assignee = await findBranchAssignee(group.branchId);
     if (assignee) {
       await ensureTask({
+        organizationId: group.organizationId,
         title: `${student.firstName} bilan bog'lanish`,
         description: `${group.name} guruhida davomat pasaydi.`,
         assignedToId: assignee.id,
@@ -226,6 +229,7 @@ export async function runDailyAutomationJobs(options?: {
         if (sender) {
           await prisma.paymentReminder.create({
             data: {
+              organizationId: fee.organizationId,
               studentId: fee.studentId,
               groupId: fee.groupId,
               branchId: fee.branchId,
@@ -300,6 +304,7 @@ export async function runDailyAutomationJobs(options?: {
       },
       select: {
         id: true,
+        organizationId: true,
         firstName: true,
         branchId: true,
         assignedToId: true,
@@ -331,6 +336,7 @@ export async function runDailyAutomationJobs(options?: {
       });
 
       await ensureTask({
+        organizationId: lead.organizationId,
         title: `${lead.firstName} lidiga follow-up`,
         description: "Avtomatik follow-up vazifasi.",
         assignedToId: assignee.id,
@@ -418,6 +424,7 @@ async function findBranchAssignee(branchId: string) {
 }
 
 async function ensureTask(input: {
+  organizationId: string;
   title: string;
   description?: string;
   assignedToId: string;
@@ -443,6 +450,7 @@ async function ensureTask(input: {
 
   return prisma.task.create({
     data: {
+      organizationId: input.organizationId,
       title: input.title,
       description: input.description ?? null,
       assignedToId: input.assignedToId,

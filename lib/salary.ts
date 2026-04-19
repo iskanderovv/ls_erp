@@ -61,7 +61,7 @@ export async function calculateTeacherSalary(
   const groupIds = baseGroups.map((group) => group.id);
 
   let calculatedAmountCents = 0;
-  let breakdown: Record<string, unknown> = {};
+  let breakdown: Prisma.InputJsonObject = {};
 
   if (config.type === SalaryType.FIXED) {
     calculatedAmountCents = config.unitAmountCents ?? 0;
