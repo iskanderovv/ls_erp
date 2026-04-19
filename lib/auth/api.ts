@@ -52,7 +52,7 @@ export async function authorizeRequest(
   if (!user) {
     return {
       ok: false,
-      response: NextResponse.json({ error: "Foydalanuvchi topilmadi." }, { status: 401 }),
+      response: NextResponse.json({ error: "Sessiya eskirgan. Qayta tizimga kiring." }, { status: 401 }),
     };
   }
 

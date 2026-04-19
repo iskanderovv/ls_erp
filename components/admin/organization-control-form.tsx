@@ -28,12 +28,14 @@ type OrganizationControlFormProps = {
 
 export function OrganizationControlForm({ organization, owners }: OrganizationControlFormProps) {
   const router = useRouter();
+  const [name, setName] = useState(organization.name);
   const [status, setStatus] = useState(organization.status);
   const [subscriptionPlan, setSubscriptionPlan] = useState(organization.subscriptionPlan);
   const [blockReason, setBlockReason] = useState(organization.blockReason ?? "");
   const [ownerId, setOwnerId] = useState(organization.ownerId ?? "");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const handleSave = async () => {
     setError("");
@@ -42,6 +44,7 @@ export function OrganizationControlForm({ organization, owners }: OrganizationCo
       await apiClient(`/api/admin/organizations/${organization.id}`, {
         method: "PATCH",
         body: JSON.stringify({
+          name: name.trim(),
           status,
           subscriptionPlan,
           blockReason: blockReason || undefined,
@@ -49,19 +52,46 @@ export function OrganizationControlForm({ organization, owners }: OrganizationCo
         }),
       });
       router.refresh();
-      } catch (error) {
-        if (error instanceof ApiError) {
-          setError(error.message);
-        } else {
-          setError("Tashkilot sozlamalarini saqlashda xatolik.");
-        }
-      } finally {
-        setLoading(false);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setError(error.message);
+      } else {
+        setError("Tashkilot sozlamalarini saqlashda xatolik.");
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!confirm(`"${organization.name}" tashkilotini butunlay o'chirmoqchimisiz? Bu amalni ortga qaytarib bo'lmaydi.`)) {
+      return;
+    }
+    setError("");
+    setDeleting(true);
+    try {
+      await apiClient(`/api/admin/organizations/${organization.id}`, {
+        method: "DELETE",
+      });
+      router.push("/admin/organizations");
+      router.refresh();
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setError(error.message);
+      } else {
+        setError("Tashkilotni o'chirishda xatolik.");
+      }
+    } finally {
+      setDeleting(false);
+    }
   };
 
   return (
     <div className="space-y-4">
+      <FormField label="Tashkilot nomi">
+        <Input value={name} onChange={(event) => setName(event.target.value)} />
+      </FormField>
+
       <FormField label="Holat">
         <Select value={status} onChange={(event) => setStatus(event.target.value as typeof status)}>
           <option value="ACTIVE">Faol</option>
@@ -100,9 +130,14 @@ export function OrganizationControlForm({ organization, owners }: OrganizationCo
 
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
-      <Button onClick={handleSave} disabled={loading}>
-        {loading ? "Saqlanmoqda..." : "Saqlash"}
-      </Button>
+      <div className="flex gap-2">
+        <Button onClick={handleSave} disabled={loading || deleting}>
+          {loading ? "Saqlanmoqda..." : "Saqlash"}
+        </Button>
+        <Button variant="destructive" onClick={handleDelete} disabled={loading || deleting}>
+          {deleting ? "O'chirilmoqda..." : "Tashkilotni o'chirish"}
+        </Button>
+      </div>
     </div>
   );
 }

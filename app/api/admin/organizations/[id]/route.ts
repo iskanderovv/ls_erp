@@ -94,3 +94,69 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
   return NextResponse.json({ organization });
 }
+
+export async function DELETE(request: NextRequest, { params }: RouteParams) {
+  const auth = await authorizeRequest(request, "organizations.manage");
+  if (!auth.ok) return auth.response;
+
+  const { id } = await params;
+
+  const organization = await prisma.organization.findUnique({
+    where: { id },
+    select: { id: true, name: true },
+  });
+  if (!organization) {
+    return NextResponse.json({ error: "Tashkilot topilmadi." }, { status: 404 });
+  }
+
+  await logSuperAdminAction({
+    action: "ORGANIZATION_DELETED",
+    entityType: "ORGANIZATION",
+    entityId: organization.id,
+    performedById: auth.session.userId,
+    payload: { name: organization.name },
+  });
+
+  await prisma.$transaction(async (tx) => {
+    const txCompat = tx as typeof tx & {
+      subscription?: { deleteMany: (args: { where: { organizationId: string } }) => Promise<unknown> };
+    };
+
+    await tx.paymentReminder.deleteMany({ where: { organizationId: id } });
+    await tx.telegramMessage.deleteMany({ where: { organizationId: id } });
+    await tx.notification.deleteMany({ where: { organizationId: id } });
+    await tx.task.deleteMany({ where: { organizationId: id } });
+    await tx.auditLog.deleteMany({ where: { organizationId: id } });
+    await tx.financialTransaction.deleteMany({ where: { organizationId: id } });
+    await tx.salaryPayment.deleteMany({ where: { organizationId: id } });
+    await tx.salaryRecord.deleteMany({ where: { organizationId: id } });
+    await tx.teacherSalaryConfig.deleteMany({
+      where: {
+        teacher: { organizationId: id },
+      },
+    });
+    await tx.expense.deleteMany({ where: { organizationId: id } });
+    await tx.attendance.deleteMany({ where: { organizationId: id } });
+    await tx.payment.deleteMany({ where: { organizationId: id } });
+    await tx.studentFee.deleteMany({ where: { organizationId: id } });
+    await tx.groupStudent.deleteMany({
+      where: {
+        group: { organizationId: id },
+      },
+    });
+    await tx.studyGroup.deleteMany({ where: { organizationId: id } });
+    await tx.lead.deleteMany({ where: { organizationId: id } });
+    await tx.student.deleteMany({ where: { organizationId: id } });
+    await tx.teacher.deleteMany({ where: { organizationId: id } });
+    await tx.user.deleteMany({ where: { organizationId: id } });
+    await tx.branch.deleteMany({ where: { organizationId: id } });
+
+    if (txCompat.subscription) {
+      await txCompat.subscription.deleteMany({ where: { organizationId: id } });
+    }
+
+    await tx.organization.delete({ where: { id } });
+  });
+
+  return NextResponse.json({ success: true });
+}

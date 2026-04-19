@@ -24,9 +24,7 @@ export async function proxy(request: NextRequest) {
   const session = token ? await verifySessionToken(token) : null;
 
   if (isPublicRoute(pathname)) {
-    if (session) {
-      return NextResponse.redirect(new URL(defaultLandingPath(session.role), request.url));
-    }
+    // Public login route should always stay reachable to avoid redirect loops with stale cookies.
     return NextResponse.next();
   }
 
