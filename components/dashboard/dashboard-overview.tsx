@@ -8,6 +8,7 @@ import { SmartInsights } from "@/components/dashboard/smart-insights";
 import { SmartOperations } from "@/components/dashboard/smart-operations";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { subscriptionPlanLabels, subscriptionStatusLabels } from "@/lib/constants";
 import { formatCurrencyFromCents } from "@/lib/money";
 import { queryKeys } from "@/lib/query-keys";
 import { formatDate } from "@/lib/utils";
@@ -19,6 +20,18 @@ type DashboardSummary = {
     teachers: number;
     leads: number;
   };
+  subscription: {
+    organizationName: string;
+    plan: "BASIC" | "PRO" | "ENTERPRISE";
+    status: "TRIAL" | "ACTIVE" | "EXPIRED";
+    trialEndsAt: string | null;
+    limits: {
+      maxStudents: number;
+      maxBranches: number;
+      currentStudents: number;
+      currentBranches: number;
+    };
+  } | null;
   finance: {
     todayRevenueCents: number;
     monthRevenueCents: number;
@@ -73,6 +86,60 @@ export function DashboardOverview() {
         <StatCard label="Jami lidlar" value={query.data.totals.leads} />
       </div>
 
+      {query.data.subscription ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Tarif ma&apos;lumotlari</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <p className="text-xs text-slate-500">Tashkilot</p>
+              <p className="font-medium">{query.data.subscription.organizationName}</p>
+            </div>
+            <div>
+              <p className="text-xs text-slate-500">Joriy tarif</p>
+              <p className="font-medium">
+                {
+                  subscriptionPlanLabels[
+                    query.data.subscription.plan as keyof typeof subscriptionPlanLabels
+                  ]
+                }
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-slate-500">Obuna holati</p>
+              <p className="font-medium">
+                {
+                  subscriptionStatusLabels[
+                    query.data.subscription.status as keyof typeof subscriptionStatusLabels
+                  ]
+                }
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-slate-500">Sinov tugash sanasi</p>
+              <p className="font-medium">
+                {query.data.subscription.trialEndsAt
+                  ? formatDate(query.data.subscription.trialEndsAt)
+                  : "-"}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-slate-500">Talabalar limiti</p>
+              <p className="font-medium">
+                {query.data.subscription.limits.currentStudents} / {query.data.subscription.limits.maxStudents}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-slate-500">Filiallar limiti</p>
+              <p className="font-medium">
+                {query.data.subscription.limits.currentBranches} / {query.data.subscription.limits.maxBranches}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      ) : null}
+
       {query.data.finance ? (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <FinanceCard
@@ -100,11 +167,11 @@ export function DashboardOverview() {
       <div className="grid gap-4 xl:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Yaqinda qo'shilgan talabalar</CardTitle>
+            <CardTitle>Yaqinda qo&apos;shilgan talabalar</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {query.data.recentStudents.length === 0 ? (
-              <p className="text-sm text-slate-500">Hozircha ma'lumot yo'q.</p>
+              <p className="text-sm text-slate-500">Hozircha ma&apos;lumot yo&apos;q.</p>
             ) : (
               query.data.recentStudents.map((student) => (
                 <div
@@ -126,11 +193,11 @@ export function DashboardOverview() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Yaqinda qo'shilgan lidlar</CardTitle>
+            <CardTitle>Yaqinda qo&apos;shilgan lidlar</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {query.data.recentLeads.length === 0 ? (
-              <p className="text-sm text-slate-500">Hozircha ma'lumot yo'q.</p>
+              <p className="text-sm text-slate-500">Hozircha ma&apos;lumot yo&apos;q.</p>
             ) : (
               query.data.recentLeads.map((lead) => (
                 <div

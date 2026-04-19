@@ -45,6 +45,31 @@ export async function GET(request: NextRequest) {
       }),
     ]);
 
+  const [organization, organizationStudentsCount, organizationBranchesCount] = await Promise.all([
+    prisma.organization.findUnique({
+      where: { id: auth.session.organizationId },
+      select: {
+        name: true,
+        subscriptionPlan: true,
+        subscriptionStatus: true,
+        trialEndsAt: true,
+      },
+    }),
+    prisma.student.count({
+      where: { organizationId: auth.session.organizationId },
+    }),
+    prisma.branch.count({
+      where: { organizationId: auth.session.organizationId },
+    }),
+  ]);
+
+  const limits =
+    organization?.subscriptionPlan === "ENTERPRISE"
+      ? { maxStudents: 5000, maxBranches: 10 }
+      : organization?.subscriptionPlan === "PRO"
+        ? { maxStudents: 500, maxBranches: 3 }
+        : { maxStudents: 100, maxBranches: 1 };
+
   let finance: {
     todayRevenueCents: number;
     monthRevenueCents: number;
@@ -128,6 +153,19 @@ export async function GET(request: NextRequest) {
       teachers,
       leads,
     },
+    subscription: organization
+      ? {
+          organizationName: organization.name,
+          plan: organization.subscriptionPlan,
+          status: organization.subscriptionStatus,
+          trialEndsAt: organization.trialEndsAt,
+          limits: {
+            ...limits,
+            currentStudents: organizationStudentsCount,
+            currentBranches: organizationBranchesCount,
+          },
+        }
+      : null,
     finance,
     recentStudents,
     recentLeads,
